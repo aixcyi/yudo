@@ -6,7 +6,7 @@ __all__ = [
 from enum import IntEnum
 from uuid import uuid4
 
-from mocks.basic import Mock
+from mock.basic import Mock
 
 
 class UUIDType(IntEnum):

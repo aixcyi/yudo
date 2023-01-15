@@ -10,7 +10,7 @@ from enum import IntEnum
 from random import randint
 from typing import Literal
 
-from mocks.basic import Mock
+from mock.basic import Mock
 
 
 def str2delta(string: str) -> timedelta:

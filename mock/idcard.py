@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from random import choice, randint
 from typing import Literal, Final
 
-from mocks.basic import Mock
+from mock.basic import Mock
 
 
 class IDNumberMock(Mock):

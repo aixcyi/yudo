@@ -7,7 +7,7 @@ import re
 from random import randbytes, randint
 from ipaddress import IPv4Address
 
-from mocks.basic import Mock
+from mock.basic import Mock
 
 
 class IPv4AddressMock(Mock):

@@ -5,6 +5,10 @@ from typing import Any, NoReturn
 class Mock(object):
     _dataset = ()
 
+    def check(self, *args, **kwargs):
+        """检查或修正参数。"""
+        return self
+
     def mock(self, cycle, *args, **kwargs):
         """
         生成模拟数据。
@@ -37,3 +41,7 @@ class MockingException(Exception):
 
     def __str__(self):
         return self.message
+
+
+def get_cycle(namespace):
+    return range(namespace.qty)
