@@ -1,42 +1,45 @@
-__all__ = [
-    'BinaryEncoderAbc',
-    'HexBinaryEncoder',
-    'DecBinaryEncoder',
-    'BaseBinaryEncoder',
-    'PythonicBinaryEncoder',
-]
-
 from base64 import b64encode, b85encode, b32encode
 from typing import Final
 
 
-class BinaryEncoderAbc(object):
-
-    def encode(self, data: bytes | bytearray) -> str:
-        raise NotImplementedError()
-
-
-class HexBinaryEncoder(BinaryEncoderAbc):
-    def __init__(self,
-                 bytes_per_sep: int = 1,
-                 seperator: str = '',
-                 prefix: str = '',
-                 suffix: str = '',
-                 head: str = '',
-                 tail: str = '', ):
-        self.bytes_per_sep = bytes_per_sep
+class Bytes(object):
+    def __init__(
+            self,
+            seperator: str = '',
+            prefix: str = '',
+            suffix: str = '',
+            head: str = '',
+            tail: str = '',
+    ):
         self.seperator = seperator
         self.prefix = prefix
         self.suffix = suffix
         self.head = head
         self.tail = tail
+
+    def encode(self, data: bytes | bytearray) -> str:
+        raise NotImplementedError()
+
+
+class HexBytes(Bytes):
+    def __init__(
+            self,
+            seperator: str = '',
+            prefix: str = '',
+            suffix: str = '',
+            head: str = '',
+            tail: str = '',
+            bytes_per_sep: int = 1,
+    ):
+        super().__init__(seperator, prefix, suffix, head, tail)
+        self.bytes_per_sep = bytes_per_sep
         if bytes_per_sep == 0:
             raise ValueError(
                 'See parameter "bytes_per_sep" of bytes.hex() in package builtins.'
                 '间隔符前后的字节数，正数从前往后数，负数从后往前数，唯独不能为0。'
             )
 
-    def encode(self, data) -> str:
+    def encode(self, data):
         # pure hex
         if len(self.seperator) < 1:
             return self.head + data.hex() + self.tail
@@ -56,30 +59,28 @@ class HexBinaryEncoder(BinaryEncoderAbc):
         return self.head + self.seperator.join(cut()) + self.tail
 
 
-class DecBinaryEncoder(BinaryEncoderAbc):
-    def __init__(self,
-                 seperator: str = ',',
-                 prefix: str = '',
-                 suffix: str = '',
-                 head: str = '',
-                 tail: str = '', ):
-        self.seperator = seperator
-        self.prefix = prefix
-        self.suffix = suffix
-        self.head = head
-        self.tail = tail
+class DecBytes(Bytes):
+    def __init__(
+            self,
+            seperator: str = ',',
+            prefix: str = '',
+            suffix: str = '',
+            head: str = '',
+            tail: str = '',
+    ):
+        super().__init__(seperator, prefix, suffix, head, tail)
         if not seperator:
             raise ValueError(
                 'Cannot ignore seperator when you translate to decimal format.'
                 '将binary转换为基于非十六进制的字符串时，间隔符不能不填。'
             )
 
-    def encode(self, data) -> str:
-        mid = (f'{self.prefix}{byte:i}{self.suffix}' for byte in data)
+    def encode(self, data):
+        mid = (f'{self.prefix}{byte:d}{self.suffix}' for byte in data)
         return self.head + self.seperator.join(mid) + self.tail
 
 
-class BaseBinaryEncoder(BinaryEncoderAbc):
+class BaseBytes(object):
     BASE_LIST: Final = (64, 85, 32)
 
     def __init__(self, base: int):
@@ -114,7 +115,7 @@ class BaseBinaryEncoder(BinaryEncoderAbc):
     #     return str(b32encode(data), encoding='ASCII')
 
 
-class PythonicBinaryEncoder(HexBinaryEncoder):
+class PythonicBytes(HexBytes):
     # b"\xd7\xd3\xd2\xed"
 
     def __init__(self):
