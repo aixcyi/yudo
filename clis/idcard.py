@@ -6,6 +6,7 @@ import click
 from click import Parameter, Context, ParamType
 
 from core.idcard import enum_adcode, enum_seq, enum_birth_by_ymd, patch_checksum, enum_birth_by_age
+from core.meaningfuls import fmt_datasize
 
 
 class Age(ParamType):
@@ -76,21 +77,7 @@ def enumidc(
         return
 
     qty = len(seqs) * len(codes) * len(births) * (len(checksum) if checksum else 1)
-    if (length := qty * 20) < 1024:
-        tip = f'{length:d} Bytes'
-    elif length < 1024 ** 2:
-        length = length / 1024
-        tip = f'{length:.2f} KB'
-    elif length < 1024 ** 3:
-        length = length / 1024 ** 2
-        tip = f'{length:.2f} MB'
-    elif length < 1024 ** 4:
-        length = length / 1024 ** 3
-        tip = f'{length:.2f} GB'
-    else:
-        length = length / 1024 ** 4
-        tip = f'{length:.2f} TB'
-
+    tip = fmt_datasize(qty * 20)
     if force is False:
         tag = input(f'输出总计约 {qty:d} 条数据，文本约 {tip}，确定继续？(Y/n) ')
         if tag[:1] != 'Y':
