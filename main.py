@@ -10,6 +10,7 @@ r"""
 import click
 
 from clis.binary import randbits
+from clis.idcard import enumidc
 
 
 @click.group()
@@ -19,5 +20,6 @@ def cli():
 
 if __name__ == '__main__':
     cli.add_command(randbits)
+    cli.add_command(enumidc)
     cli.get_help = lambda ctx: print(__doc__)
     cli()
