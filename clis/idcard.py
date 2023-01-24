@@ -77,10 +77,11 @@ def enumidc(
         return
 
     qty = len(seqs) * len(codes) * len(births) * (len(checksum) if checksum else 1)
-    tip = fmt_datasize(qty * 20)
+    dsz = fmt_datasize(qty * 20)
+    tip = f'预估数据量 {qty:d} 条，文本 {dsz}，确定继续？(Y/n)'
     if force is False:
-        tag = input(f'输出总计约 {qty:d} 条数据，文本约 {tip}，确定继续？(Y/n) ')
-        if tag[:1] != 'Y':
+        print(tip, end=' ', file=sys.stderr)
+        if input()[:1] != 'Y':
             return
 
     ids = product(codes, births, seqs)
