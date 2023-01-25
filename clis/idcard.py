@@ -64,6 +64,7 @@ def enumidc(
     seqs = tuple(enum_seq(male, female))
     codes = tuple(enum_adcode(province, city, county))
     births = tuple(enum_birth_by_age(age) if age else enum_birth_by_ymd(year, month, day))
+    checksum = ''.join(checksum)
     if not seqs:
         print('没有匹配的序列号。', file=sys.stderr)
         return
