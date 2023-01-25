@@ -1,5 +1,6 @@
 import sys
 from itertools import product
+from math import ceil
 from typing import Any
 
 import click
@@ -76,7 +77,8 @@ def enumidc(
         print('每个校验码只能为 0、1、2、3、4、5、6、7、8、9、X 之一。', file=sys.stderr)
         return
 
-    qty = len(seqs) * len(codes) * len(births) * (len(checksum) if checksum else 1)
+    qty = len(seqs) * len(codes) * len(births)
+    qty = ceil(qty / 11 * len(checksum)) if checksum else qty
     dsz = fmt_datasize(qty * 20)
     tip = f'预估数据量 {qty:d} 条，文本 {dsz}，确定继续？(Y/n)'
     if force is False:
