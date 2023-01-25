@@ -84,7 +84,6 @@ def enumidc(
         if input()[:1] != 'Y':
             return
 
-    ids = product(codes, births, seqs)
-    ids = map(lambda *args: patch_checksum(''.join(args)), ids)
+    ids = map(patch_checksum, product(codes, births, seqs))
     ids = filter(lambda i: i[-1] in checksum, ids) if checksum else ids
     print('\n'.join(ids))

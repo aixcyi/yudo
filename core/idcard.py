@@ -113,10 +113,11 @@ def enum_seq(male: bool = False, female: bool = False) -> typing.Iterable:
         case _:
             seqs = range(1, 995 + 1)  # 996~999 是百岁老人专用号码
 
-    return map(str, seqs)
+    return map(lambda i: f'{i:03d}', seqs)
 
 
-def patch_checksum(number: str) -> str:
+def patch_checksum(*digits) -> str:
+    number = ''.join(digits[0])
     if len(number) < 17:
         raise ValueError()
 
