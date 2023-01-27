@@ -2,8 +2,7 @@ import math
 import random
 from typing import Final, Any
 
-import click
-from click import ParamType, Parameter, Context
+from click import command, argument, option, ParamType, Parameter, Context
 
 from core.binary import HexBytes, DecBytes
 
@@ -32,20 +31,21 @@ class BitLength(ParamType):
             self.fail(msg, param, ctx)
 
 
-@click.command(help='随机生成 qty 个字节串。')
-@click.argument('bits', type=BitLength())
-@click.option('-q', '--qty', type=int, default=10, help='输出多少串bytes（每行一串）。')
-@click.option('-x', '--hex', is_flag=True, help='以十六进制字节格式输出。（默认）')
-@click.option('-d', '--dec', is_flag=True, help='以十进制字节格式输出。')
-@click.option('-i', '--int', is_flag=True, help='以整数形式输出。')
-@click.option('--seperator', default='', help='每组之间的间隔符。')
-@click.option('--prefix', default='', help='每组字节的前缀。')
-@click.option('--suffix', default='', help='每组字节的后缀。')
-@click.option('--head', default='', help='开头的前缀。')
-@click.option('--tail', default='', help='结尾的尾缀。')
-@click.option('--group', default=1, type=int, help='多少字节一组（默认1）。')
+@command()
+@argument('bits', type=BitLength())
+@option('-q', '--qty', type=int, default=10, help='输出多少串bytes（每行一串）。')
+@option('-x', '--hex', is_flag=True, help='以十六进制字节格式输出。（默认）')
+@option('-d', '--dec', is_flag=True, help='以十进制字节格式输出。')
+@option('-i', '--int', is_flag=True, help='以整数形式输出。')
+@option('--seperator', default='', help='每组之间的间隔符。')
+@option('--prefix', default='', help='每组字节的前缀。')
+@option('--suffix', default='', help='每组字节的后缀。')
+@option('--head', default='', help='开头的前缀。')
+@option('--tail', default='', help='结尾的尾缀。')
+@option('--group', default=1, type=int, help='多少字节一组（默认1）。')
 def randbits(bits, qty, hex, dec, int, group,
              seperator, prefix, suffix, head, tail):
+    """随机生成 qty 个 BITS 比特的字节串。"""
     if int:
         op = None
     elif dec:

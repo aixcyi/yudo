@@ -8,7 +8,7 @@ from math import ceil
 from click import Parameter, Context, ParamType, command, option
 
 from core.meaningfuls import fmt_datasize
-from core.structs import MorseSegment, Segment
+from core.structs import SegmentSet, Segment
 
 RIGHTS = (7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2)
 
@@ -49,7 +49,7 @@ def enum_birth_by_ymd(
 
 
 def enum_birth_by_age(ages: Iterable, base: date = date.today()):
-    ms = MorseSegment([
+    ms = SegmentSet([
         Segment(
             base.replace(base.year - age, 1, 1),
             base.replace(base.year - age, 12, 31),
@@ -116,7 +116,7 @@ class Checksum(ParamType):
         self.fail(msg, param, ctx)
 
 
-@command(help='穷举所有可能的身份证号码。')
+@command()
 @option('-p', '--province', multiple=True, help='省级代码，可输入多个。')
 @option('-c', '--city', multiple=True, help='市级代码，可输入多个。')
 @option('-t', '--county', multiple=True, help='县级代码，可输入多个。')
@@ -133,6 +133,7 @@ def enumidc(
         year, month, day, age,
         male, female, checksum, force,
 ):
+    """穷举所有可能的身份证号码。"""
     seqs = tuple(enum_seq(male, female))
     codes = tuple(enum_adcode(province, city, county))
     births = tuple(enum_birth_by_age(age) if age else enum_birth_by_ymd(year, month, day))

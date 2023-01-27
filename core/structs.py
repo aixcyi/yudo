@@ -27,7 +27,7 @@ class Segment(NamedTuple):
         return self
 
 
-class MorseSegment:
+class SegmentSet:
     def __init__(self, segments: list[Segment]):
         segments = sorted(segments, key=lambda s: (s[0], s[1]))
         results = []
@@ -45,6 +45,4 @@ class MorseSegment:
         self._segments = results
 
     def __iter__(self):
-        print(self._segments)
-        c = chain.from_iterable(self._segments)
-        return c
+        return chain.from_iterable(self._segments)
