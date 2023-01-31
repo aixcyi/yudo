@@ -38,6 +38,8 @@ class RawRange(cli.ParamType):
             a, _, b = a.partition('~')
             if not b and not p:
                 a = b = value
+            elif not b:
+                b = a
             return self._bound(a), self._bound(b), self._plus(p)
         except ValueError as e:
             msg = e.args[0]
@@ -141,8 +143,8 @@ def gend(
     except re.error:
         cli.secho('正则表达式有误。', err=True, fg='yellow')
         return
-    offsets = [Segment(root + a, root + b) for a, b, root in offsets] if offsets else []
-    days = [Segment(a, b) for a, b, _ in days] if days else []
+    offsets = [-Segment(root + a, root + b) for a, b, root in offsets] if offsets else []
+    days = [-Segment(a, b) for a, b, _ in days] if days else []
     ages = [
         # 因为是减法，所以是要base减去a、b中比较大的那个，
         # 才能得到比较小的具体日期，进而令 Segment 的 start <= stop
@@ -202,9 +204,9 @@ def gendt(
         cli.secho('正则表达式有误。', err=True, fg='yellow')
         return
     unit = timedelta(microseconds=1) if is_ms_base else timedelta(seconds=1)
-    stamps = [Segment(_p(a, tz), _p(b, tz), unit) for a, b, tz in stamps] if stamps else []
-    offsets = [Segment(root + a, root + b, unit) for a, b, root in offsets] if offsets else []
-    intervals = [Segment(a, b) for a, b, _ in intervals] if intervals else []
+    stamps = [-Segment(_p(a, tz), _p(b, tz), unit) for a, b, tz in stamps] if stamps else []
+    offsets = [-Segment(root + a, root + b, unit) for a, b, root in offsets] if offsets else []
+    intervals = [-Segment(a, b) for a, b, _ in intervals] if intervals else []
 
     moments = iter(SegmentSet(offsets + intervals + stamps))
     moments = map(lambda d: d.strftime(fmt), moments)

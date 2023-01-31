@@ -1,16 +1,12 @@
 from datetime import date, timedelta
 from itertools import chain
-from typing import Any, NoReturn
+from typing import NamedTuple, Any, NoReturn
 
 
-class Segment:
-
-    def __init__(self, start, stop, unit=timedelta(days=1)):
-        self.start = start
-        self.stop = stop
-        self.unit = unit
-        if self.stop < self.start:
-            self.start, self.stop = self.stop, self.start
+class Segment(NamedTuple):
+    start: date
+    stop: date
+    unit: Any = timedelta(days=1)
 
     def __iter__(self):
         sign = self.start
@@ -29,6 +25,11 @@ class Segment:
         if self.stop < other.stop:
             return Segment(self.start, other.stop)
         return self
+
+    def __neg__(self):
+        if self.stop >= self.start:
+            return self
+        return Segment(self.stop, self.start, self.unit)
 
 
 class SegmentSet:
