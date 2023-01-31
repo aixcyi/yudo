@@ -56,8 +56,11 @@ class RawRange(cli.ParamType):
         """
         if self._type is int:  # 直接指定年龄
             return int(value)
-        if self._type is datetime:  # 直接指定时间
-            return datetime.strptime(value, DATETIME_FORMAT)
+        if self._type is datetime:  # 直接指定时间（允许只有日期）
+            try:
+                return datetime.strptime(value, DATETIME_FORMAT)
+            except ValueError:
+                return datetime.strptime(value, DATE_FORMAT)
         if self._type is date:  # 直接指定日期
             return datetime.strptime(value, DATE_FORMAT).date()
         if self._type == timedelta | date:  # 基于BASE这一天的偏移量
@@ -161,12 +164,12 @@ def gend(
 
 @cli.command()
 @cli.option('-f', '--format', 'fmt', default=DATETIME_FORMAT,
-            help=f'输出格式，默认为{DATETIME_FORMAT}”。\n时间作为参数时格式固定为“yyyy.mm.dd+HH:MM:SS”。')
+            help=f'输出格式，默认为{DATETIME_FORMAT}。\n时间作为参数时格式固定为yyyy.mm.dd[+HH:MM:SS]。')
 @cli.option('-i', '--interval', 'intervals', metavar='MIN[~MAX]', type=RawRange(datetime), multiple=True,
             help='每个 -i 直接输出一个时间，或范围内的所有时间。')
 @cli.option('-t', '--timestamp', 'stamps', metavar='MIN[~MAX][,ZONE]', type=RawRange(float), multiple=True,
             help='每个 -t 输出范围内的所有时间，范围的最大最小值由 ZONE 时区的秒级时间戳确定。\n'
-                 '时间戳可以是小数。ZONE 的格式为 ±HHMM[SS[.ffffff]]。')
+                 '时间戳可以是小数。ZONE 的格式为±HHMM[SS[.ffffff]]。')
 @cli.option('-o', '--offset', 'offsets', metavar='MIN[~MAX][,BASE]', type=RawRange(timedelta | datetime), multiple=True,
             help='每个 -o 输出范围内的所有时间，范围的左右两边由基于 BASE 的偏移量决定。\n'
                  'BASE 默认是此时此刻。偏移量正则表达为“-?(\\d+[hmsf]){1,}”，\n'
