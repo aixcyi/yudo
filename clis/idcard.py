@@ -116,7 +116,7 @@ class Checksum(ParamType):
         self.fail(msg, param, ctx)
 
 
-@command()
+@command('enumidc')
 @option('-p', '--province', multiple=True, help='省级代码，可输入多个。')
 @option('-c', '--city', multiple=True, help='市级代码，可输入多个。')
 @option('-t', '--county', multiple=True, help='县级代码，可输入多个。')
@@ -128,7 +128,7 @@ class Checksum(ParamType):
 @option('-F', '--female', is_flag=True, help='女性。男女同时选择等效于同时不选择。')
 @option('-s', '--checksum', multiple=True, help='校验码。身份证最后一位。可输入多个。')
 @option('-f', '--force', is_flag=True, help='不提示数量，直接输出。')
-def enumidc(
+def generate_prcid(
         province, city, county,
         year, month, day, age,
         male, female, checksum, force,

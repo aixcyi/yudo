@@ -11,9 +11,9 @@ import typing
 
 import click
 
-from clis.binary import randbits
-from clis.idcard import enumidc
-from clis.datetime import gend, gendt
+from clis.binary import generate_bits
+from clis.idcard import generate_prcid
+from clis.datetime import generate_date, generate_datetime
 
 
 @click.group()
@@ -29,9 +29,9 @@ def get_help(self: click.Context) -> typing.NoReturn:
 
 
 if __name__ == '__main__':
-    cli.add_command(randbits)
-    cli.add_command(enumidc)
-    cli.add_command(gend)
-    cli.add_command(gendt)
+    cli.add_command(generate_bits)
+    cli.add_command(generate_prcid)
+    cli.add_command(generate_date)
+    cli.add_command(generate_datetime)
     cli.get_help = get_help
     cli()

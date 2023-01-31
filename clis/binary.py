@@ -1,5 +1,5 @@
-import math
-import random
+from math import ceil
+from random import getrandbits
 from typing import Final, Any
 
 from click import command, argument, option, ParamType, Parameter, Context
@@ -39,7 +39,7 @@ class BitLength(ParamType):
         return [CompletionItem(a) for a in algorithms]
 
 
-@command()
+@command('randbits')
 @argument('bits', type=BitLength())
 @option('-q', '--qty', type=int, default=10, help='输出多少串bytes（每行一串）。')
 @option('-x', '--hex', 'hexadecimal', is_flag=True, help='以十六进制字节格式输出。（默认）')
@@ -51,8 +51,10 @@ class BitLength(ParamType):
 @option('--head', default='', help='开头的前缀。')
 @option('--tail', default='', help='结尾的尾缀。')
 @option('--group', default=1, type=int, help='多少字节一组（默认1）。')
-def randbits(bits, qty, hexadecimal, decimal, integer, group,
-             seperator, prefix, suffix, head, tail):
+def generate_bits(
+        bits, qty, hexadecimal, decimal, integer, group,
+        seperator, prefix, suffix, head, tail
+):
     """随机生成 qty 个 BITS 比特的字节串。"""
     if integer:
         op = None
@@ -61,7 +63,7 @@ def randbits(bits, qty, hexadecimal, decimal, integer, group,
     else:
         op = HexBytes(seperator, prefix, suffix, head, tail, group)
 
-    qb = math.ceil(bits / 8)  # quantity of bytes
-    ds = (random.getrandbits(bits) for _ in range(qty))
+    qb = ceil(bits / 8)  # quantity of bytes
+    ds = (getrandbits(bits) for _ in range(qty))
     ds = (op.encode(d.to_bytes(qb, 'little')) for d in ds) if op else (str(d) for d in ds)
     print('\n'.join(ds))
