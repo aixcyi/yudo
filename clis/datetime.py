@@ -1,10 +1,11 @@
+import re
 from datetime import datetime, date, timedelta, timezone
-from re import findall, fullmatch, compile as compile_re, error as re_error
 from types import UnionType
+from typing import Pattern
 
-from click import ParamType, command, option, secho, echo
+import click
 
-from core.meaningfuls import fmt_datasize
+from core.click_chore import Regex, ask
 from core.structs import Segment, SegmentSet
 
 ZODIACS = '鼠牛虎兔龙蛇马羊猴鸡狗猪'
@@ -12,28 +13,14 @@ DATE_FORMAT = '%Y.%m.%d'
 DATETIME_FORMAT = f'{DATE_FORMAT}+%H:%M:%S'
 
 
-def ask(dateset, force: bool) -> bool:
-    qty = len(dateset)
-    dsz = fmt_datasize(len(dateset[0]) * qty if dateset else 0)
-    tip = f'预估数据量 {qty:d} 条，文本 {dsz}，确定继续？(Y/[n]) '
-    if qty == 0:
-        secho('没有产生任何数据。', err=True, fg='yellow')
-        return False
-    if force is False:
-        echo(tip, err=True, nl=False)
-        if input()[:1] != 'Y':
-            return False
-    return True
-
-
-class RawRange(ParamType):
+class RawRange(click.ParamType):
     name = 'raw_range'
 
     def __init__(self, inner_type: type | UnionType):
         self._type = inner_type
 
     def convert(self, value: str, param, ctx) -> tuple:
-        try:
+        try:  # 命令行表达：a[~b][,p]
             a, _, p = value.partition(',')
             a, _, b = a.partition('~')
             if not b and not p:
@@ -68,7 +55,7 @@ class RawRange(ParamType):
         if self._type == timedelta | date:  # 基于BASE这一天的偏移量
             negative = value.startswith('-')
             value = value[1:] if negative else value
-            deltas = findall(r'(\d+)([ymdsw])', value)
+            deltas = re.findall(r'(\d+)([ymdsw])', value)
             if not (_v := ''.join(''.join(d) for d in deltas)) == value:
                 raise ValueError(f'{value} 解析得到 {_v}')
             summary = sum(
@@ -81,7 +68,7 @@ class RawRange(ParamType):
         if self._type == timedelta | datetime:  # 基于BASE这一刻的偏移量
             negative = value.startswith('-')
             value = value[1:] if negative else value
-            deltas = findall(r'(\d+)([hmsf])', value)
+            deltas = re.findall(r'(\d+)([hmsf])', value)
             if not (_v := ''.join(''.join(d) for d in deltas)) == value:
                 raise ValueError(f'{value} 解析得到 {_v}')
             summary = sum(
@@ -109,26 +96,29 @@ class RawRange(ParamType):
         raise TypeError()
 
 
-@command('gend')
-@option('-f', '--format', 'fmt', default=DATE_FORMAT,
-        help=f'输出格式，默认为“{DATE_FORMAT}”。日期作为参数时格式固定为“yyyy.mm.dd”。')
-@option('-i', '--interval', 'days', metavar='MIN[~MAX]', type=RawRange(date), multiple=True,
-        help='每个 -i 直接输出一个日期，或范围内的所有日期。')
-@option('-a', '--age', 'ages', metavar='MIN[~MAX][,YEAR]', type=RawRange(int), multiple=True,
-        help='每个 -a 输出范围内的所有日期，范围的最大最小值由 YEAR 年时的年龄确定。')
-@option('-o', '--offset', 'offsets', metavar='LEFT[~RIGHT][,BASE]', type=RawRange(timedelta | date), multiple=True,
-        help='每个 -o 输出范围内的所有日期，范围的左右两边由基于 BASE 的偏移量决定。\n'
-             'BASE 默认是当天。偏移量正则表达为“-?(\\d+[ymdsw]){1,}”，\n'
-             '其中后缀“d”表示一天，1m(月)=30d，1y(年)=365d，1w(星期)=7d，1s(季度)=3m=90d。')
-@option('-z', '--zodiacs', help='过滤不在这些生肖年的日期，例如“虎兔龙蛇”。生肖年按公历算。')
-@option('-r', '--regex', help='过滤不能完全匹配正则表达式的(格式化后的)日期。')
-@option('-F', '--force', is_flag=True, help='不提示数量，直接穷举输出所有日期。')
+@click.command('gend')
+@click.option('-f', '--format', 'fmt', default=DATE_FORMAT,
+              help=f'输出格式，默认为“{DATE_FORMAT}”。日期作为参数时格式固定为“yyyy.mm.dd”。')
+@click.option('-i', '--interval', 'days',
+              metavar='MIN[~MAX]', type=RawRange(date), multiple=True,
+              help='每个 -i 直接输出一个日期，或范围内的所有日期。')
+@click.option('-a', '--age', 'ages',
+              metavar='MIN[~MAX][,YEAR]', type=RawRange(int), multiple=True,
+              help='每个 -a 输出范围内的所有日期，范围的最大最小值由 YEAR 年时的年龄确定。')
+@click.option('-o', '--offset', 'offsets',
+              metavar='LEFT[~RIGHT][,BASE]', type=RawRange(timedelta | date), multiple=True,
+              help='每个 -o 输出范围内的所有日期，范围的左右两边由基于 BASE 的偏移量决定。\n'
+                   'BASE 默认是当天。偏移量正则表达为“-?(\\d+[ymdsw]){1,}”，\n'
+                   '其中后缀“d”表示一天，1m(月)=30d，1y(年)=365d，1w(星期)=7d，1s(季度)=3m=90d。')
+@click.option('-z', '--zodiacs', help='过滤不在这些生肖年的日期，例如“虎兔龙蛇”。生肖年按公历算。')
+@click.option('-r', '--regex', type=Regex(), help='过滤不能完全匹配正则表达式的(格式化后的)日期。')
+@click.option('-F', '--force', is_flag=True, help='不提示数量，直接穷举输出所有日期。')
 def generate_date(
         fmt: str,
         days: tuple[tuple[date, date, None]],
         ages: tuple[tuple[int, int, int]],
         offsets: tuple[tuple[timedelta, timedelta, date]],
-        regex: str,
+        regex: Pattern,
         zodiacs: str,
         force: bool,
 ):
@@ -136,13 +126,9 @@ def generate_date(
     try:
         date(1949, 10, 1).strftime(fmt)
     except ValueError:
-        secho('输出格式有误。', err=True, fg='yellow')
+        click.secho('输出格式有误。', err=True, fg='yellow')
         return
-    try:
-        pattern = compile_re(regex) if regex else None
-    except re_error:
-        secho('正则表达式有误。', err=True, fg='yellow')
-        return
+
     offsets = [-Segment(root + a, root + b) for a, b, root in offsets] if offsets else []
     days = [-Segment(a, b) for a, b, _ in days] if days else []
     ages = [
@@ -158,51 +144,49 @@ def generate_date(
     dates = iter(SegmentSet(offsets + days + ages))
     dates = filter(lambda d: ZODIACS[(d.year - 4) % 12] in zodiacs, dates) if zodiacs else dates
     dates = map(lambda d: d.strftime(fmt), dates)
-    dates = filter(lambda d: fullmatch(pattern, d), dates) if pattern else dates
+    dates = filter(lambda d: re.fullmatch(regex, d), dates) if regex else dates
     dates = tuple(dates)
     if ask(dates, force):
         print('\n'.join(dates))
 
 
-@command('gendt')
-@option('-f', '--format', 'fmt', default=DATETIME_FORMAT,
-        help=f'输出格式，默认为{DATETIME_FORMAT}。\n时间作为参数时格式固定为yyyy.mm.dd[+HH:MM:SS]。')
-@option('-i', '--interval', 'intervals', metavar='MIN[~MAX]', type=RawRange(datetime), multiple=True,
-        help='每个 -i 直接输出一个时间，或范围内的所有时间。')
-@option('-t', '--timestamp', 'stamps', metavar='MIN[~MAX][,ZONE]', type=RawRange(float), multiple=True,
-        help='每个 -t 输出范围内的所有时间，范围的最大最小值由 ZONE 时区的秒级时间戳确定。\n'
-             '时间戳可以是小数。ZONE 的格式为±HHMM[SS[.ffffff]]。')
-@option('-o', '--offset', 'offsets', metavar='MIN[~MAX][,BASE]', type=RawRange(timedelta | datetime), multiple=True,
-        help='每个 -o 输出范围内的所有时间，范围的左右两边由基于 BASE 的偏移量决定。\n'
-             'BASE 默认是此时此刻。偏移量正则表达为“-?(\\d+[hmsf]){1,}”，\n'
-             '其中后缀“s”表示一秒，1m(分钟)=60s，1h(小时)=60m=3600s，1f(毫秒)=0.001s。')
-@option('-r', '--regex', help='过滤不能完全匹配正则表达式的(格式化后的)日期。')
-@option('-m', '--millisecond', 'is_ms_base', help='以毫秒为单位（默认是秒）进行穷举。')
-@option('-F', '--force', is_flag=True, help='不提示数量，直接穷举输出所有时间。')
+@click.command('gendt')
+@click.option('-f', '--format', 'fmt', default=DATETIME_FORMAT,
+              help=f'输出格式，默认为{DATETIME_FORMAT}。\n时间作为参数时格式固定为yyyy.mm.dd[+HH:MM:SS]。')
+@click.option('-i', '--interval', 'intervals',
+              metavar='MIN[~MAX]', type=RawRange(datetime), multiple=True,
+              help='每个 -i 直接输出一个时间，或范围内的所有时间。')
+@click.option('-t', '--timestamp', 'stamps',
+              metavar='MIN[~MAX][,ZONE]', type=RawRange(float), multiple=True,
+              help='每个 -t 输出范围内的所有时间，范围的最大最小值由 ZONE 时区的秒级时间戳确定。\n'
+                   '时间戳可以是小数。ZONE 的格式为±HHMM[SS[.ffffff]]。')
+@click.option('-o', '--offset', 'offsets',
+              metavar='MIN[~MAX][,BASE]', type=RawRange(timedelta | datetime), multiple=True,
+              help='每个 -o 输出范围内的所有时间，范围的左右两边由基于 BASE 的偏移量决定。\n'
+                   'BASE 默认是此时此刻。偏移量正则表达为“-?(\\d+[hmsf]){1,}”，\n'
+                   '其中后缀“s”表示一秒，1m(分钟)=60s，1h(小时)=60m=3600s，1f(毫秒)=0.001s。')
+@click.option('-r', '--regex', type=Regex(), help='过滤不能完全匹配正则表达式的(格式化后的)日期。')
+@click.option('-m', '--millisecond', 'is_ms_base', help='以毫秒为单位（默认是秒）进行穷举。')
+@click.option('-F', '--force', is_flag=True, help='不提示数量，直接穷举输出所有时间。')
 def generate_datetime(
         fmt: str,
         intervals: tuple[tuple[datetime, datetime, None]],
         stamps: tuple[tuple[float, float, timezone]],
         offsets: tuple[tuple[timedelta, timedelta, datetime]],
-        regex: str,
+        regex: Pattern,
         is_ms_base: bool,
         force: bool,
 ):
     """生成指定格式的日期时间。"""
+    try:
+        datetime(1949, 10, 1, 12, 0, 0).strftime(fmt)
+    except ValueError:
+        click.secho('输出格式有误。', err=True, fg='yellow')
+        return
 
     def _p(t: float, tz: timezone) -> datetime:
         return datetime.fromtimestamp(t, tz)
 
-    try:
-        datetime(1949, 10, 1, 12, 0, 0).strftime(fmt)
-    except ValueError:
-        secho('输出格式有误。', err=True, fg='yellow')
-        return
-    try:
-        pattern = compile_re(regex) if regex else None
-    except re_error:
-        secho('正则表达式有误。', err=True, fg='yellow')
-        return
     unit = timedelta(microseconds=1) if is_ms_base else timedelta(seconds=1)
     stamps = [-Segment(_p(a, tz), _p(b, tz), unit) for a, b, tz in stamps] if stamps else []
     offsets = [-Segment(root + a, root + b, unit) for a, b, root in offsets] if offsets else []
@@ -210,7 +194,7 @@ def generate_datetime(
 
     moments = iter(SegmentSet(offsets + intervals + stamps))
     moments = map(lambda d: d.strftime(fmt), moments)
-    moments = filter(lambda d: fullmatch(pattern, d), moments) if pattern else moments
+    moments = filter(lambda d: re.fullmatch(regex, d), moments) if regex else moments
     moments = tuple(moments)
     if ask(moments, force):
         print('\n'.join(moments))

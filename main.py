@@ -11,6 +11,7 @@ import typing
 
 import click
 
+from clis.arrangement import product_columns
 from clis.binary import generate_bits
 from clis.idcard import generate_prcid
 from clis.datetime import generate_date, generate_datetime
@@ -33,5 +34,6 @@ if __name__ == '__main__':
     cli.add_command(generate_prcid)
     cli.add_command(generate_date)
     cli.add_command(generate_datetime)
+    cli.add_command(product_columns)
     cli.get_help = get_help
     cli()
