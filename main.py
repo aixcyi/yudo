@@ -13,7 +13,7 @@ import click
 
 from clis.binary import randbits
 from clis.idcard import enumidc
-from clis.datetime import gend
+from clis.datetime import gend, gendt
 
 
 @click.group()
@@ -32,5 +32,6 @@ if __name__ == '__main__':
     cli.add_command(randbits)
     cli.add_command(enumidc)
     cli.add_command(gend)
+    cli.add_command(gendt)
     cli.get_help = get_help
     cli()
