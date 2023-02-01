@@ -34,7 +34,7 @@ def product_columns(
         regex: Pattern,
         force: bool,
 ):
-    """对多列文本进行全排列。（每一列都是按行分隔的文本）"""
+    """求多列文本的笛卡尔积。（每一列都是按行分隔的文本）"""
     if len(files) < 1:
         click.secho('至少需要一列（一个文件）。', err=True, fg='yellow')
         return

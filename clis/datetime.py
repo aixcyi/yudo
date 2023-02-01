@@ -96,7 +96,7 @@ class RawRange(click.ParamType):
         raise TypeError()
 
 
-@click.command('gend')
+@click.command('enumd')
 @click.option('-f', '--format', 'fmt', default=DATE_FORMAT,
               help=f'输出格式，默认为“{DATE_FORMAT}”。日期作为参数时格式固定为“yyyy.mm.dd”。')
 @click.option('-i', '--interval', 'days',
@@ -113,7 +113,7 @@ class RawRange(click.ParamType):
 @click.option('-z', '--zodiacs', help='过滤不在这些生肖年的日期，例如“虎兔龙蛇”。生肖年按公历算。')
 @click.option('-r', '--regex', type=Regex(), help='过滤不能完全匹配正则表达式的(格式化后的)日期。')
 @click.option('-F', '--force', is_flag=True, help='不提示数量，直接穷举输出所有日期。')
-def generate_date(
+def enum_date(
         fmt: str,
         days: tuple[tuple[date, date, None]],
         ages: tuple[tuple[int, int, int]],
@@ -150,7 +150,7 @@ def generate_date(
         print('\n'.join(dates))
 
 
-@click.command('gendt')
+@click.command('enumdt')
 @click.option('-f', '--format', 'fmt', default=DATETIME_FORMAT,
               help=f'输出格式，默认为{DATETIME_FORMAT}。\n时间作为参数时格式固定为yyyy.mm.dd[+HH:MM:SS]。')
 @click.option('-i', '--interval', 'intervals',
@@ -168,7 +168,7 @@ def generate_date(
 @click.option('-r', '--regex', type=Regex(), help='过滤不能完全匹配正则表达式的(格式化后的)日期。')
 @click.option('-m', '--millisecond', 'is_ms_base', help='以毫秒为单位（默认是秒）进行穷举。')
 @click.option('-F', '--force', is_flag=True, help='不提示数量，直接穷举输出所有时间。')
-def generate_datetime(
+def enum_datetime(
         fmt: str,
         intervals: tuple[tuple[datetime, datetime, None]],
         stamps: tuple[tuple[float, float, timezone]],

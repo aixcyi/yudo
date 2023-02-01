@@ -39,7 +39,7 @@ class BitLength(click.ParamType):
         return [CompletionItem(a) for a in algorithms]
 
 
-@click.command('randbits')
+@click.command('randbit')
 @click.argument('bits', type=BitLength())
 @click.option('-q', '--qty', type=int, default=1, help='生成多少串字节串（每行一串）。')
 @click.option('-d', '--dec', 'decimal', is_flag=True, help='以十进制字节格式输出。默认输出HEX。')
