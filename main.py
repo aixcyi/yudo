@@ -11,10 +11,11 @@ import typing
 
 import click
 
+from clis.adcode import get_adcode
 from clis.arrangement import product_columns
 from clis.binary import generate_bits
-from clis.idcard import generate_prcid
 from clis.datetime import generate_date, generate_datetime
+from clis.idcard import generate_prcid
 
 
 @click.group()
@@ -30,10 +31,11 @@ def get_help(self: click.Context) -> typing.NoReturn:
 
 
 if __name__ == '__main__':
+    cli.add_command(get_adcode)
     cli.add_command(generate_bits)
-    cli.add_command(generate_prcid)
     cli.add_command(generate_date)
     cli.add_command(generate_datetime)
+    cli.add_command(generate_prcid)
     cli.add_command(product_columns)
     cli.get_help = get_help
     cli()
