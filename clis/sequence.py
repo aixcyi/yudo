@@ -18,12 +18,12 @@ def patch_prc_checksum(number: str | tuple[str]) -> str:
 
 @click.command('product')
 @click.argument('files', type=click.File(encoding='UTF-8'), required=True, nargs=-1)
-@click.option('-r', '--repeat', 'repetition', type=int, default=1, help='重复次数（将所有列作为一个整体进行重复）。')
+@click.option('-m', '--repeat', 'repetition', type=int, default=1, help='重复次数（将所有列作为一个整体进行重复）。')
 @click.option('-0', '--skip-empty', is_flag=True, help='跳过行数为0的列。如果不选此项，'
                                                        '那么任意一列行数为0都会导致没有输出。')
 @click.option('--patch-prc-sum', is_flag=True, help='计算并追加每个身份证号码的校验值。号码长度不能低于17位。')
 @click.option('-f', '--format', 'fmt', help=r'用格式渲染每一行结果。每列用“{列序号}”代表，序号从0开始。')
-@click.option('-R', '--regex', type=Regex(), help='过滤不能完全匹配正则表达式的结果。')
+@click.option('-r', '--regex', type=Regex(), help='过滤不能完全匹配正则表达式的结果。')
 @click.option('-F', '--force', is_flag=True, help='不提示，直接输出。')
 def product_columns(
         files: tuple[TextIOWrapper],

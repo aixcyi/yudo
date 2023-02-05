@@ -12,9 +12,6 @@ from core.structs import SegmentSet, Segment
 
 RIGHTS = (7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2)
 
-with open(r'./code2022.json', 'r', encoding='UTF-8') as f:
-    ad_codes = tuple(k[:6] for k in json.load(f).keys() if k.endswith('000000'))
-
 
 def mk_date(year: int, month: int, day: int) -> str | None:
     try:
@@ -28,6 +25,8 @@ def enum_adcode(
         cities: Sequence = None,
         counties: Sequence = None,
 ) -> Iterable:
+    with open(r'./code2022.json', 'r', encoding='UTF-8') as f:
+        ad_codes = tuple(k[:6] for k in json.load(f).keys() if k.endswith('000000'))
     codes = (c for c in ad_codes if not c.endswith('0000'))
     codes = (c for c in codes if c[0:2] in provinces) if provinces else codes
     codes = (c for c in codes if c[2:4] in cities) if cities else codes
