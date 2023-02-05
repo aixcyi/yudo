@@ -16,6 +16,7 @@ from clis.sequence import product_columns
 from clis.binary import generate_bits
 from clis.datetime import enum_date, enum_datetime
 from clis.idcard import enum_prcid
+from clis.util import split_url
 
 
 @click.group()
@@ -37,5 +38,6 @@ if __name__ == '__main__':
     cli.add_command(enum_datetime)
     cli.add_command(enum_prcid)
     cli.add_command(product_columns)
+    cli.add_command(split_url)
     cli.get_help = get_help
     cli()
