@@ -16,7 +16,7 @@ def patch_prc_checksum(number: str | tuple[str]) -> str:
     return digits[:17] + '10X98765432'[sum(map(lambda d, r: int(d) * r, digits, RIGHTS)) % 11]
 
 
-@click.command('product')
+@click.command('x')
 @click.argument('files', type=click.File(encoding='UTF-8'), required=True, nargs=-1)
 @click.option('-m', '--repeat', 'repetition', type=int, default=1, help='重复次数（将所有列作为一个整体进行重复）。')
 @click.option('-0', '--skip-empty', is_flag=True, help='跳过行数为0的列。如果不选此项，'
