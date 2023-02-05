@@ -180,6 +180,7 @@ class BitLength(click.ParamType):
 @click.option('--suffix', default='', help='每组字节的后缀。')
 @click.option('--head', default='', help='开头的前缀。')
 @click.option('--tail', default='', help='结尾的尾缀。')
+@click.help_option('-h', '--help')
 def generate_bits(
         bits, qty, hexadecimal, decimal, integer, b64, b85, b32,
         group, seperator, prefix, suffix, head, tail
@@ -214,6 +215,7 @@ def generate_bits(
 @click.option('--b16', '--base16', '-x', is_flag=True, help='使用base16编码字符集。')
 @click.option('--b64', '--base64', is_flag=True, help='使用base64编码字符集，不包含=号。')
 @click.option('-m', '--line-max', type=int, help='每行最多放几个字符。')
+@click.help_option('-h', '--help')
 def generate_chars(
         length: int,
         digit: bool, digit_safe: bool,

@@ -25,6 +25,7 @@ def patch_prc_checksum(number: str | tuple[str]) -> str:
 @click.option('-f', '--format', 'fmt', help=r'用格式渲染每一行结果。每列用“{列序号}”代表，序号从0开始。')
 @click.option('-r', '--regex', type=Regex(), help='过滤不能完全匹配正则表达式的结果。')
 @click.option('-F', '--force', is_flag=True, help='不提示，直接输出。')
+@click.help_option('-h', '--help')
 def product_columns(
         files: tuple[TextIOWrapper],
         repetition: int,

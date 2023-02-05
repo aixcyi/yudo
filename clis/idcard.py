@@ -5,7 +5,7 @@ from datetime import date
 from itertools import product
 from math import ceil
 
-from click import Parameter, Context, ParamType, command, option
+from click import Parameter, Context, ParamType, command, option, help_option
 
 from core.click_chore import fmt_datasize
 from core.structs import SegmentSet, Segment
@@ -127,6 +127,7 @@ class Checksum(ParamType):
 @option('-F', '--female', is_flag=True, help='女性。男女同时选择等效于同时不选择。')
 @option('-s', '--checksum', multiple=True, help='校验码。身份证最后一位。可输入多个。')
 @option('-f', '--force', is_flag=True, help='不提示数量，直接输出。')
+@help_option('-h', '--help')
 def enum_prcid(
         province, city, county,
         year, month, day, age,

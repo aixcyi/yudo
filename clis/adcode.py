@@ -14,6 +14,7 @@ from core.click_chore import Regex
 @click.option('-t', '--township', 'townships', multiple=True, help='按乡级代码(三位数字)筛选区划代码。可填多个。')
 @click.option('-r', '--regex', type=Regex(), help='使用正则表达式筛选划代码。')
 @click.option('--purify', is_flag=True, help='不输出区划代码对应的名称。')
+@click.help_option('-h', '--help')
 def get_adcode(
         code: str, provinces, cities, counties, townships, regex, purify,
 ):

@@ -47,6 +47,7 @@ def beautify_list(values):
 @click.option('-l', '--parse-location', is_flag=True, help='是否解析域名部分。')
 @click.option('-f', '--skip-fragment', is_flag=True,
               help='禁止解析片段部分。当#出现在URL路径中导致结果错误时使用，但可能导致query受污染。')
+@click.help_option('-h', '--help')
 def split_url(encoding, parse_location, skip_fragment):
     """解析一条URL。"""
     click.secho('输入一条URL：', err=True, nl=False)
