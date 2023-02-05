@@ -96,7 +96,7 @@ class RawRange(click.ParamType):
         raise TypeError()
 
 
-@click.command('enumd')
+@click.command('d')
 @click.option('-f', '--format', 'fmt', default=DATE_FORMAT,
               help=f'输出格式，默认为“{DATE_FORMAT}”。日期作为参数时格式固定为“yyyy.mm.dd”。')
 @click.option('-i', '--interval', 'days',
@@ -122,7 +122,7 @@ def enum_date(
         zodiacs: str,
         force: bool,
 ):
-    """生成指定格式的日期（不含时间）。"""
+    """穷举范围内的日期（不含时间）。"""
     try:
         date(1949, 10, 1).strftime(fmt)
     except ValueError:
@@ -150,7 +150,7 @@ def enum_date(
         print('\n'.join(dates))
 
 
-@click.command('enumdt')
+@click.command('dt')
 @click.option('-f', '--format', 'fmt', default=DATETIME_FORMAT,
               help=f'输出格式，默认为{DATETIME_FORMAT}。\n时间作为参数时格式固定为yyyy.mm.dd[+HH:MM:SS]。')
 @click.option('-i', '--interval', 'intervals',
@@ -177,7 +177,7 @@ def enum_datetime(
         is_ms_base: bool,
         force: bool,
 ):
-    """生成指定格式的日期时间。"""
+    """穷举范围内的日期时间。"""
     try:
         datetime(1949, 10, 1, 12, 0, 0).strftime(fmt)
     except ValueError:

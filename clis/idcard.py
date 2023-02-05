@@ -7,7 +7,7 @@ from math import ceil
 
 from click import Parameter, Context, ParamType, command, option
 
-from core.meaningfuls import fmt_datasize
+from core.click_chore import fmt_datasize
 from core.structs import SegmentSet, Segment
 
 RIGHTS = (7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2)
@@ -115,7 +115,7 @@ class Checksum(ParamType):
         self.fail(msg, param, ctx)
 
 
-@command('enumidc', deprecated=True)
+@command('idc', deprecated=True)
 @option('-p', '--province', multiple=True, help='省级代码，可输入多个。')
 @option('-c', '--city', multiple=True, help='市级代码，可输入多个。')
 @option('-t', '--county', multiple=True, help='县级代码，可输入多个。')
@@ -132,7 +132,7 @@ def enum_prcid(
         year, month, day, age,
         male, female, checksum, force,
 ):
-    """（已废弃）穷举所有可能的身份证号码。"""
+    """穷举所有可能的身份证号码。【已废弃】"""
     seqs = tuple(enum_seq(male, female))
     codes = tuple(enum_adcode(province, city, county))
     births = tuple(enum_birth_by_age(age) if age else enum_birth_by_ymd(year, month, day))
