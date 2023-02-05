@@ -19,7 +19,7 @@ from rich.table import Table
 from rich.text import Text
 
 from clis.adcode import get_adcode
-from clis.binary import generate_bits
+from clis.binary import generate_bits, generate_chars
 from clis.datetime import enum_date, enum_datetime
 from clis.idcard import enum_prcid
 from clis.sequence import product_columns
@@ -48,6 +48,7 @@ def get_help(self: click.Context) -> typing.NoReturn:
 if __name__ == '__main__':
     cli.add_command(get_adcode)
     cli.add_command(generate_bits)
+    cli.add_command(generate_chars)
     cli.add_command(enum_date)
     cli.add_command(enum_datetime)
     cli.add_command(enum_prcid)

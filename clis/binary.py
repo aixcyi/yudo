@@ -1,11 +1,17 @@
 from base64 import b64encode, b85encode, b32encode
 from math import ceil
-from random import getrandbits
+from random import getrandbits, choices
 from typing import Any
 from typing import Final
 
 import click
 from click.shell_completion import CompletionItem
+
+# print(''.join(map(chr, range(32, 127))))
+SYMBOLS = r'''!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~'''
+SYNBOLS_NOSHIFT = r"`-=[]\;',./"
+SYNBOLS_SHIFT = r'~!@#$%^&*()_+{}|:"<>?'
+assert sorted(SYMBOLS) == sorted(SYNBOLS_NOSHIFT + SYNBOLS_SHIFT)
 
 
 class Bytes(object):
@@ -192,3 +198,54 @@ def generate_bits(
     ds = (getrandbits(bits) for _ in range(qty))
     ds = (op.encode(d.to_bytes(qb, 'little')) for d in ds) if op else (str(d) for d in ds)
     print('\n'.join(ds))
+
+
+@click.command('char')
+@click.argument('length', type=int)
+@click.option('-d', '--digit', is_flag=True, help='向自定义字符集中添加阿拉伯数字。')
+@click.option('-D', '--digit-safe', is_flag=True, help='向自定义字符集中添加阿拉伯数字，除了数字0和1。')
+@click.option('-l', '--lowercase', '-a', is_flag=True, help='向自定义字符集中添加小写字母。')
+@click.option('-L', '--lowercase-safe', is_flag=True, help='向自定义字符集中添加小写字母，除了小写字母l。')
+@click.option('-u', '--uppercase', '-A', is_flag=True, help='向自定义字符集中添加大写字母。')
+@click.option('-U', '--uppercase-safe', is_flag=True, help='向自定义字符集中添加大写字母，除了大写字母I和O。')
+@click.option('-s', '--symbol', is_flag=True, help='向自定义字符集中添加键盘上的所有可见符号。')
+@click.option('-c', '--symbol-normal', is_flag=True, help='向自定义字符集中添加键盘上所有无需shift的可见符号。')
+@click.option('-C', '--symbol-shift', is_flag=True, help='向自定义字符集中添加键盘上所有需要shift的可见符号。')
+@click.option('--b16', '--base16', '-x', is_flag=True, help='使用base16编码字符集。')
+@click.option('--b64', '--base64', is_flag=True, help='使用base64编码字符集，不包含=号。')
+@click.option('-m', '--line-max', type=int, help='每行最多放几个字符。')
+def generate_chars(
+        length: int,
+        digit: bool, digit_safe: bool,
+        lowercase: bool, lowercase_safe: bool,
+        uppercase: bool, uppercase_safe: bool,
+        symbol: bool, symbol_normal: bool, symbol_shift: bool,
+        b16: bool, b64: bool,
+        line_max: int,
+):
+    """随机生成 LENGTH 个字符。"""
+    charset_cus = ''.join([
+        '' if not digit else '0123456789',
+        '' if not uppercase else 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        '' if not lowercase else 'abcdefghijklmnopqrstuvwxyz',
+        '' if not digit_safe else '23456789',
+        '' if not uppercase_safe else 'ABCDEFGHJKLMNPQRSTUVWXYZ',
+        '' if not lowercase_safe else 'abcdefghijklmnpqrstuvwxyz',
+        '' if not symbol else SYMBOLS,
+        '' if not symbol_normal else SYNBOLS_NOSHIFT,
+        '' if not symbol_shift else SYNBOLS_SHIFT,
+    ])
+    if b16:
+        charset = '0123456789ABCDEF'
+    elif b64:
+        charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/'
+    elif charset_cus:
+        charset = charset_cus
+    else:
+        click.secho('未设置字符集。', err=True, fg='yellow')
+        return
+
+    result = ''.join(choices(charset, k=length))
+    if line_max > 0:
+        for i in range(0, len(result), line_max):
+            print(result[i:i + line_max])
