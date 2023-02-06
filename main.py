@@ -1,13 +1,13 @@
 r"""
-                    __
-   __  ____  ______/ /___
-  / / / / / / / __  / __ \
- / /_/ / /_/ / /_/ / /_/ /
- \__, /\__,_/\__,_/\____/
-/____/
-         "Python 3.10 powerful script."
+                      __
+     __  ____  ______/ /___
+    / / / / / / / __  / __ \
+   / /_/ / /_/ / /_/ / /_/ /
+   \__, /\__,_/\__,_/\____/
+  /____/
+          "Python 3.10 easiest customizable script."
 """
-__version__ = (0, 1, 0, 'release', 0xd2ed)
+__version__ = (0, 1, 0, 0xd2ed, 'release')
 __author__ = 'aixcyi'
 
 import typing
@@ -30,7 +30,7 @@ def cli():
 
 def get_help(self: click.Context) -> typing.NoReturn:
     info = self.to_info_dict()['command']['commands']
-    table = rich.table.Table('', '', box=None)
+    table = rich.table.Table('Command', 'Description', box=rich.box.SIMPLE_HEAD)
     for n, h in info.items():
         if h['deprecated']:
             n = rich.text.Text(n, rich.style.Style(color='bright_blue'))
