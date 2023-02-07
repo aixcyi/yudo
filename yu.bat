@@ -4,7 +4,7 @@
 @SET PYTHON_PATH=""
 
 @REM 使用conda环境运行时，conda环境的名称。
-@SET CONDA_ENV="yutils"
+@SET CONDA_ENV="yudo"
 
 @REM 如果 yu start 无法启动conda环境，请尝试修改以下配置。
 @SET CONDA_PATH="C:\ProgramData\Miniconda3\condabin"
