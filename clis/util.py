@@ -1,5 +1,5 @@
 from typing import NamedTuple
-from urllib.parse import urlsplit, parse_qs
+from urllib.parse import urlsplit, parse_qs, quote_plus, quote, unquote, unquote_plus
 
 import click
 import rich
@@ -73,3 +73,24 @@ def split_url(encoding, parse_location, skip_fragment):
     for attr, value in info.items():
         table.add_row(attr, value)
     Console().print(table)
+
+
+@click.command('ue')
+@click.option('-p', '--plus', is_flag=True, help="将空格转义为 + 号，而不是直接编码为 %20 。")
+@click.option('-e', '--encoding', default='UTF-8', help="字符编码，默认是 UTF-8。")
+@click.option('-s', 'safes', default='', help="不允许转码的字符。默认没有。")
+def encode_uri(plus: bool, encoding: str, safes: str):
+    """对字符串进行URL编码。"""
+    click.secho('输入任意字符串：', err=True, nl=False)
+    translate = quote_plus if plus else quote
+    print(translate(input(), safe=safes, encoding=encoding))
+
+
+@click.command('ud')
+@click.option('-p', '--plus', is_flag=True, help="将 + 号转义为空格。")
+@click.option('-e', '--encoding', default='UTF-8', help="字符编码，默认是 UTF-8。")
+def decode_uri(plus: bool, encoding: str):
+    """将字符串按照URL编码规则来解码。"""
+    click.secho('输入任意字符串：', err=True, nl=False)
+    translate = unquote_plus if plus else unquote
+    print(translate(input(), encoding=encoding))
