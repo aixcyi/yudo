@@ -250,3 +250,5 @@ def generate_chars(
     if line_max > 0:
         for i in range(0, len(result), line_max):
             print(result[i:i + line_max])
+    else:
+        print(result)
