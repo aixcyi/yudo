@@ -115,7 +115,7 @@ class Checksum(ParamType):
         self.fail(msg, param, ctx)
 
 
-@command('idc', deprecated=True)
+@command('enumidc', deprecated=True)
 @option('-p', '--province', multiple=True, help='省级代码，可输入多个。')
 @option('-c', '--city', multiple=True, help='市级代码，可输入多个。')
 @option('-t', '--county', multiple=True, help='县级代码，可输入多个。')

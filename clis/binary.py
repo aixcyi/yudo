@@ -164,7 +164,7 @@ class BitLength(click.ParamType):
         return [CompletionItem(a) for a in algorithms]
 
 
-@click.command('bit')
+@click.command('randbit')
 @click.argument('bits', type=BitLength())
 @click.option('-q', '--qty', type=int, default=1, help='生成多少串字节串（每行一串）。')
 @click.option('-x', '--hex', 'hexadecimal', is_flag=True, help='以十六进制数组（HEX）格式输出。')
@@ -200,7 +200,7 @@ def generate_bits(
     print('\n'.join(ds))
 
 
-@click.command('char')
+@click.command('randstr')
 @click.argument('length', type=int)
 @click.option('-d', '--digit', is_flag=True, help='向自定义字符集中添加阿拉伯数字。')
 @click.option('-D', '--digit-safe', is_flag=True, help='向自定义字符集中添加阿拉伯数字，除了数字0和1。')

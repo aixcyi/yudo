@@ -75,7 +75,7 @@ def split_url(encoding, parse_location, skip_fragment):
     Console().print(table)
 
 
-@click.command('ue')
+@click.command('urlen')
 @click.option('-p', '--plus', is_flag=True, help="将空格转义为 + 号，而不是直接编码为 %20 。")
 @click.option('-e', '--encoding', default='UTF-8', help="字符编码，默认是 UTF-8。")
 @click.option('-s', 'safes', default='', help="不允许转码的字符。默认没有。")
@@ -86,7 +86,7 @@ def encode_uri(plus: bool, encoding: str, safes: str):
     print(translate(input(), safe=safes, encoding=encoding))
 
 
-@click.command('ud')
+@click.command('urlde')
 @click.option('-p', '--plus', is_flag=True, help="将 + 号转义为空格。")
 @click.option('-e', '--encoding', default='UTF-8', help="字符编码，默认是 UTF-8。")
 def decode_uri(plus: bool, encoding: str):
