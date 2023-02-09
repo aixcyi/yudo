@@ -1,8 +1,7 @@
 from base64 import b64encode, b85encode, b32encode
 from math import ceil
 from random import getrandbits, choices
-from typing import Any
-from typing import Final
+from typing import Any, Final
 
 import click
 from click.shell_completion import CompletionItem

@@ -1,5 +1,6 @@
 from clis.adcode import get_adcode
 from clis.binary import generate_bits, generate_chars
+from clis.configuration import configurate
 from clis.datetime import enum_date, enum_datetime
 from clis.idcard import enum_prcid
 from clis.sequence import product_columns
@@ -16,4 +17,5 @@ interface_list = [
     split_url,
     encode_uri,
     decode_uri,
+    configurate,
 ]

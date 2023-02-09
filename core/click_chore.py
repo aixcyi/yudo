@@ -1,7 +1,11 @@
 import re
+from configparser import ConfigParser
+from pathlib import Path
 from typing import Pattern
 
 from click import ParamType, secho, echo
+
+cfp = Path(__file__).parent.parent / 'yudo.ini'
 
 
 def fmt_datasize(size: int) -> str:
@@ -39,3 +43,17 @@ def ask(dateset, force: bool) -> bool:
         if input()[:1] != 'Y':
             return False
     return True
+
+
+class YuConfiguration(ConfigParser):
+
+    def __enter__(self):
+        self.read(cfp, encoding='UTF-8')
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    def save_now(self):
+        with open(cfp, 'w', encoding='UTF-8') as f:
+            self.write(f)
