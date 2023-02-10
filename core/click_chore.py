@@ -1,8 +1,10 @@
 import re
 from configparser import ConfigParser
+from io import StringIO
 from pathlib import Path
 from typing import Pattern
 
+import click
 from click import ParamType, secho, echo
 
 cfp = Path(__file__).parent.parent / 'yudo.ini'
@@ -46,14 +48,42 @@ def ask(dateset, force: bool) -> bool:
 
 
 class YuConfiguration(ConfigParser):
+    save_finally = False
 
     def __enter__(self):
         self.read(cfp, encoding='UTF-8')
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
+        if self.save_finally:
+            with open(cfp, 'w', encoding='UTF-8') as f:
+                self.write(f)
 
-    def save_now(self):
-        with open(cfp, 'w', encoding='UTF-8') as f:
+    def get(self, section: str, option: str, *, raw=False, vars=None, fallback=object()) -> str:
+        value = super().get(section, option, raw=raw, vars=vars, fallback=fallback)
+        if section == 'charset':
+            try:
+                value = str(bytes.fromhex(value), encoding='ASCII')
+            except ValueError:
+                click.secho('charset 的配置值解码失败。', err=True, fg='red')
+                exit(-1)
+        return value
+
+    def set(self, section: str, option: str, value: str | None = ...) -> None:
+        if section == 'charset':
+            try:
+                value = bytes(value, encoding='ASCII').hex()
+            except ValueError:
+                click.secho('charset 的配置值不能含有非ASCII字符。', err=True, fg='red')
+                exit(-1)
+        return super().set(section, option, value)
+
+    def gettext(self):
+        with StringIO() as f:
             self.write(f)
+            return f.getvalue()
+
+    def ensure(self, section: str):
+        if section not in self:
+            self.add_section(section)
+        return self[section]

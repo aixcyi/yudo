@@ -6,11 +6,27 @@ from typing import Any, Final
 import click
 from click.shell_completion import CompletionItem
 
+from core.click_chore import YuConfiguration
+
 # print(''.join(map(chr, range(32, 127))))
-SYMBOLS = r'''!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~'''
-SYNBOLS_NOSHIFT = r"`-=[]\;',./"
-SYNBOLS_SHIFT = r'~!@#$%^&*()_+{}|:"<>?'
-assert sorted(SYMBOLS) == sorted(SYNBOLS_NOSHIFT + SYNBOLS_SHIFT)
+CHARSETS = {
+    'digit': '0123456789',
+    'upper': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    'lower': 'abcdefghijklmnopqrstuvwxyz',
+    'digit_safe': '23456789',
+    'upper_safe': 'ABCDEFGHJKLMNPQRSTUVWXYZ',
+    'lower_safe': 'abcdefghijklmnpqrstuvwxyz',
+    'symbol': r'''!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~''',
+    'symbol_noshift': r"`-=[]\;',./",
+    'symbol_shift': r'~!@#$%^&*()_+{}|:"<>?',
+    'base16': '0123456789ABCDEF',
+    'base64': '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/',
+}
+assert sorted(CHARSETS['symbol']) == sorted(CHARSETS['symbol_noshift'] + CHARSETS['symbol_shift'])
+
+with YuConfiguration() as configs:
+    configs.save_finally = True
+    configs.ensure('charset').update(CHARSETS)
 
 
 class Bytes(object):
@@ -226,20 +242,20 @@ def generate_chars(
 ):
     """随机生成 LENGTH 个字符。"""
     charset_cus = ''.join([
-        '' if not digit else '0123456789',
-        '' if not uppercase else 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-        '' if not lowercase else 'abcdefghijklmnopqrstuvwxyz',
-        '' if not digit_safe else '23456789',
-        '' if not uppercase_safe else 'ABCDEFGHJKLMNPQRSTUVWXYZ',
-        '' if not lowercase_safe else 'abcdefghijklmnpqrstuvwxyz',
-        '' if not symbol else SYMBOLS,
-        '' if not symbol_normal else SYNBOLS_NOSHIFT,
-        '' if not symbol_shift else SYNBOLS_SHIFT,
+        '' if not digit else CHARSETS['digit'],
+        '' if not uppercase else CHARSETS['upper'],
+        '' if not lowercase else CHARSETS['lower'],
+        '' if not digit_safe else CHARSETS['digit_safe'],
+        '' if not uppercase_safe else CHARSETS['upper_safe'],
+        '' if not lowercase_safe else CHARSETS['lower_safe'],
+        '' if not symbol else CHARSETS['symbols'],
+        '' if not symbol_normal else CHARSETS['synbols_noshift'],
+        '' if not symbol_shift else CHARSETS['synbols_shift'],
     ])
     if b16:
-        charset = '0123456789ABCDEF'
+        charset = CHARSETS['base16']
     elif b64:
-        charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/'
+        charset = CHARSETS['base64']
     elif charset_cus:
         charset = charset_cus
     else:
