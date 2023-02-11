@@ -6,6 +6,7 @@ from typing import Pattern
 import click
 
 from core.click_chore import Regex, ask
+from style import *
 
 RIGHTS = (7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2)
 
@@ -39,10 +40,10 @@ def product_columns(
     求多列文本的笛卡尔积，每一列都是按行分隔的文本。使用文件输入。
     """
     if len(files) < 1:
-        click.secho('至少需要一列（一个文件）。', err=True, fg='yellow')
+        click.secho('至少需要一列（一个文件）。', err=True, fg=PT_WARNING)
         return
     if repetition < 1:
-        click.secho('重复次数不能小于1。', err=True, fg='red')
+        click.secho('重复次数不能小于1。', err=True, fg=PT_ERROR)
         return
 
     if skip_empty:

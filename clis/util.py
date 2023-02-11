@@ -8,6 +8,8 @@ from rich.style import Style
 from rich.table import Table
 from rich.text import Text
 
+from style import *
+
 
 class NetLocation(NamedTuple):
     location: str
@@ -57,7 +59,7 @@ def split_url(encoding, parse_location, skip_fragment):
 
     match info['scheme']:
         case 'https':
-            info['scheme'] = Text(info['scheme'], Style(color='green'))
+            info['scheme'] = Text(info['scheme'], Style(color=URL_SECURITY_PROTOCOL))
 
     location = parse_loc(info['netloc'])
     if not location.is_pure() and parse_location:

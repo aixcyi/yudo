@@ -7,6 +7,7 @@ import click
 
 from core.click_chore import Regex, ask
 from core.structs import Segment, SegmentSet
+from style import *
 
 ZODIACS = '鼠牛虎兔龙蛇马羊猴鸡狗猪'
 DATE_FORMAT = '%Y.%m.%d'
@@ -129,7 +130,7 @@ def enum_date(
     try:
         date(1949, 10, 1).strftime(fmt)
     except ValueError:
-        click.secho('输出格式有误。', err=True, fg='yellow')
+        click.secho('输出格式有误。', err=True, fg=PT_WARNING)
         return
 
     offsets = [-Segment(root + a, root + b) for a, b, root in offsets] if offsets else []
@@ -187,7 +188,7 @@ def enum_datetime(
     try:
         datetime(1949, 10, 1, 12, 0, 0).strftime(fmt)
     except ValueError:
-        click.secho('输出格式有误。', err=True, fg='yellow')
+        click.secho('输出格式有误。', err=True, fg=PT_WARNING)
         return
 
     def _p(t: float, tz: timezone) -> datetime:

@@ -7,6 +7,7 @@ import click
 from click.shell_completion import CompletionItem
 
 from core.click_chore import YuConfiguration
+from style import PT_WARNING
 
 # print(''.join(map(chr, range(32, 127))))
 CHARSETS = {
@@ -265,7 +266,7 @@ def generate_chars(
     elif charset_cus:
         charset = charset_cus
     else:
-        click.secho('未设置字符集。', err=True, fg='yellow')
+        click.secho('未设置字符集。', err=True, fg=PT_WARNING)
         return
 
     result = ''.join(choices(charset, k=length))

@@ -7,6 +7,8 @@ from typing import Pattern
 import click
 from click import ParamType, secho, echo
 
+from style import *
+
 cfp = Path(__file__).parent.parent / 'yudo.ini'
 
 
@@ -38,7 +40,7 @@ def ask(dateset, force: bool) -> bool:
     dsz = fmt_datasize(len(dateset[0]) * qty if dateset else 0)
     tip = f'预估数据量 {qty:d} 条，文本 {dsz}，确定继续？(Y/[n]) '
     if qty == 0:
-        secho('没有产生任何数据。', err=True, fg='yellow')
+        secho('没有产生任何数据。', err=True, fg=PT_WARNING)
         return False
     if force is False:
         echo(tip, err=True, nl=False)
@@ -65,7 +67,7 @@ class YuConfiguration(ConfigParser):
             try:
                 value = str(bytes.fromhex(value), encoding='ASCII')
             except ValueError:
-                click.secho('charset 的配置值解码失败。', err=True, fg='red')
+                click.secho('charset 的配置值解码失败。', err=True, fg=PT_ERROR)
                 exit(-1)
         return value
 
@@ -74,7 +76,7 @@ class YuConfiguration(ConfigParser):
             try:
                 value = bytes(value, encoding='ASCII').hex()
             except ValueError:
-                click.secho('charset 的配置值不能含有非ASCII字符。', err=True, fg='red')
+                click.secho('charset 的配置值不能含有非ASCII字符。', err=True, fg=PT_ERROR)
                 exit(-1)
         return super().set(section, option, value)
 

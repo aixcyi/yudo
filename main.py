@@ -16,6 +16,7 @@ import click
 import rich
 
 from clis import interface_list
+from style import *
 
 interfaces = []
 interfaces += interface_list
@@ -30,10 +31,12 @@ def cli():
 
 def get_help(self: click.Context) -> typing.NoReturn:
     info = self.to_info_dict()['command']['commands']
-    table = rich.table.Table('Command', 'Description', box=rich.box.SIMPLE_HEAD)
+    table = rich.table.Table('Command', 'Description',
+                             box=rich.box.SIMPLE_HEAD,
+                             row_styles=[MT_ROW_LIGHT, MT_ROW_LIGHT])
     for n, h in info.items():
         if h['deprecated']:
-            n = rich.text.Text(n, rich.style.Style(color='bright_blue'))
+            n = rich.text.Text(n, rich.style.Style(color=MT_DEPRECATED))
         table.add_row(n, h['short_help'])
     table.add_row('-v', '查看yudo的版本号')
     table.add_row('-h', '查看此帮助信息')
