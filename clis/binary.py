@@ -180,7 +180,7 @@ class BitLength(click.ParamType):
         return [CompletionItem(a) for a in algorithms]
 
 
-@click.command('randbit')
+@click.command('randbit', short_help='随机生成一定数量比特的字节串（bytes）')
 @click.argument('bits', type=BitLength())
 @click.option('-q', '--qty', type=int, default=1, help='生成多少串字节串（每行一串）。')
 @click.option('-x', '--hex', 'hexadecimal', is_flag=True, help='以十六进制数组（HEX）格式输出。')
@@ -200,7 +200,9 @@ def generate_bits(
         bits, qty, hexadecimal, decimal, integer, b64, b85, b32,
         group, seperator, prefix, suffix, head, tail
 ):
-    """随机生成 BITS 比特的字节串。"""
+    """
+    随机生成 BITS 比特的字节串，并以某种格式输出为文本。
+    """
     if integer:
         op = None
     elif b64 or b85 or b32:
@@ -216,7 +218,7 @@ def generate_bits(
     print('\n'.join(ds))
 
 
-@click.command('randstr')
+@click.command('randstr', short_help='随机生成一定长度的字符串')
 @click.argument('length', type=int)
 @click.option('-d', '--digit', is_flag=True, help='向自定义字符集中添加阿拉伯数字。')
 @click.option('-D', '--digit-safe', is_flag=True, help='向自定义字符集中添加阿拉伯数字，除了数字0和1。')
@@ -240,7 +242,11 @@ def generate_chars(
         b16: bool, b64: bool,
         line_max: int,
 ):
-    """随机生成 LENGTH 个字符。"""
+    """
+    随机生成 LENGTH 个字符。
+
+    通常来说，如果要生成按比特数计的字符串，更建议用 randbit 命令。
+    """
     charset_cus = ''.join([
         '' if not digit else CHARSETS['digit'],
         '' if not uppercase else CHARSETS['upper'],

@@ -115,7 +115,7 @@ class Checksum(ParamType):
         self.fail(msg, param, ctx)
 
 
-@command('enumidc', deprecated=True)
+@command('enumidc', deprecated=True, short_help='穷举所有可能的身份证号码【已废弃】')
 @option('-p', '--province', multiple=True, help='省级代码，可输入多个。')
 @option('-c', '--city', multiple=True, help='市级代码，可输入多个。')
 @option('-t', '--county', multiple=True, help='县级代码，可输入多个。')
@@ -133,7 +133,9 @@ def enum_prcid(
         year, month, day, age,
         male, female, checksum, force,
 ):
-    """穷举所有可能的身份证号码。【已废弃】"""
+    """
+    穷举所有可能的身份证号码。【已废弃】
+    """
     seqs = tuple(enum_seq(male, female))
     codes = tuple(enum_adcode(province, city, county))
     births = tuple(enum_birth_by_age(age) if age else enum_birth_by_ymd(year, month, day))

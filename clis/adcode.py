@@ -52,7 +52,7 @@ def search_code(a, b, _code, codes_map):
         return {}
 
 
-@click.command('adc')
+@click.command('adc', short_help='查询某个或列出指定条件下的行政区划代码')
 @click.option('-d', '--detail', 'detail', metavar='CODE', help='查询某个区划代码的详细信息。')
 @click.option('-s', '--sub', 'parent', metavar='CODE', help='查询某个区划的所有直接子级区划。')
 @click.option('-p', '--province', 'provinces', multiple=True, help='按省级代码(两位数字)筛选区划代码。可填多个。')

@@ -3,13 +3,13 @@ import click
 from core.click_chore import YuConfiguration
 
 
-@click.command('conf')
+@click.command('conf', short_help='读取或覆写yudo的配置')
 @click.argument('key', metavar='[SECTION[.KEY]]', default='', required=False)
 @click.argument('value', required=False)
 @click.help_option('-h', '--help')
 def configurate(key: str | None, value: str | None):
     """
-    读取或覆写yudo的配置。
+    读取或覆写yudo安装目录下的配置。一般用于yudo命令的自定义。
     """
     section, _, key = key.rpartition('.')
     if not section:

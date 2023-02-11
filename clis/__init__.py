@@ -12,7 +12,7 @@ interface_list = [
     generate_chars,
     enum_date,
     enum_datetime,
-    # enum_prcid,
+    enum_prcid,
     product_columns,
     split_url,
     encode_uri,

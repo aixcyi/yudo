@@ -34,9 +34,9 @@ def get_help(self: click.Context) -> typing.NoReturn:
     for n, h in info.items():
         if h['deprecated']:
             n = rich.text.Text(n, rich.style.Style(color='bright_blue'))
-        table.add_row(n, h["help"])
-    table.add_row('-v', '查看yudo的版本号。')
-    table.add_row('-h', '查看yudo的帮助信息。')
+        table.add_row(n, h['short_help'])
+    table.add_row('-v', '查看yudo的版本号')
+    table.add_row('-h', '查看此帮助信息')
 
     console = rich.console.Console()
     console.print(__doc__)

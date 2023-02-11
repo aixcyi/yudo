@@ -2,7 +2,7 @@ from typing import NamedTuple
 from urllib.parse import urlsplit, parse_qs, quote_plus, quote, unquote, unquote_plus
 
 import click
-import rich
+from rich import box
 from rich.console import Console
 from rich.style import Style
 from rich.table import Table
@@ -42,14 +42,16 @@ def beautify_list(values):
         return f'array({s})'
 
 
-@click.command('url')
+@click.command('url', short_help='解析一条URL')
 @click.option('-e', '--encoding', default='UTF-8', help='用何种编码解析。默认是UTF-8。')
 @click.option('-l', '--parse-location', is_flag=True, help='是否解析域名部分。')
 @click.option('-f', '--skip-fragment', is_flag=True,
               help='禁止解析片段部分。当#出现在URL路径中导致结果错误时使用，但可能导致query受污染。')
 @click.help_option('-h', '--help')
 def split_url(encoding, parse_location, skip_fragment):
-    """解析一条URL。"""
+    """
+    请求输入并解析一条URL。支持http、ftp等等相似格式的字符串。
+    """
     click.secho('输入一条URL：', err=True, nl=False)
     info = urlsplit(input(), allow_fragments=not skip_fragment)._asdict()
 
@@ -69,28 +71,32 @@ def split_url(encoding, parse_location, skip_fragment):
         for k, v in queryset.items():
             info['query'].add_row(k, beautify_list(v))
 
-    table = Table('Property', 'Content', box=rich.box.SIMPLE_HEAD)
+    table = Table('Property', 'Content', box=box.SIMPLE_HEAD)
     for attr, value in info.items():
         table.add_row(attr, value)
     Console().print(table)
 
 
-@click.command('urlen')
+@click.command('urlen', short_help='对字符串进行URL编码')
 @click.option('-p', '--plus', is_flag=True, help="将空格转义为 + 号，而不是直接编码为 %20 。")
 @click.option('-e', '--encoding', default='UTF-8', help="字符编码，默认是 UTF-8。")
 @click.option('-s', 'safes', default='', help="不允许转码的字符。默认没有。")
 def encode_uri(plus: bool, encoding: str, safes: str):
-    """对字符串进行URL编码。"""
+    """
+    对字符串进行URL编码。
+    """
     click.secho('输入任意字符串：', err=True, nl=False)
     translate = quote_plus if plus else quote
     print(translate(input(), safe=safes, encoding=encoding))
 
 
-@click.command('urlde')
+@click.command('urlde', short_help='将字符串按照URL编码规则来解码')
 @click.option('-p', '--plus', is_flag=True, help="将 + 号转义为空格。")
 @click.option('-e', '--encoding', default='UTF-8', help="字符编码，默认是 UTF-8。")
 def decode_uri(plus: bool, encoding: str):
-    """将字符串按照URL编码规则来解码。"""
+    """
+    将字符串按照URL编码规则来解码。
+    """
     click.secho('输入任意字符串：', err=True, nl=False)
     translate = unquote_plus if plus else unquote
     print(translate(input(), encoding=encoding))
