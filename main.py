@@ -33,7 +33,7 @@ def get_help(self: click.Context) -> typing.NoReturn:
     info = self.to_info_dict()['command']['commands']
     table = rich.table.Table('Command', 'Description',
                              box=rich.box.SIMPLE_HEAD,
-                             row_styles=[MT_ROW_LIGHT, MT_ROW_LIGHT])
+                             row_styles=MT_ROW)
     for n, h in info.items():
         if h['deprecated']:
             n = rich.text.Text(n, rich.style.Style(color=MT_DEPRECATED))

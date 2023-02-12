@@ -8,6 +8,7 @@ ClickColorName: TypeAlias = str
 # Main Table (Help)
 MT_ROW_LIGHT = RichColorName('')
 MT_ROW_DARK = RichColorName('grey50')
+MT_ROW = [MT_ROW_DARK, MT_ROW_LIGHT]
 MT_DEPRECATED = RichColorName('dark_goldenrod')
 
 # Printable Text
