@@ -8,7 +8,7 @@ from rich.style import Style
 from rich.table import Table
 from rich.text import Text
 
-from style import *
+from core.style import *
 
 
 class NetLocation(NamedTuple):

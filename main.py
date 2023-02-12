@@ -16,7 +16,7 @@ import click
 import rich
 
 from clis import interface_list
-from style import *
+from core.style import *
 
 interfaces = []
 interfaces += interface_list

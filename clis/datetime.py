@@ -7,7 +7,7 @@ import click
 
 from core.click_chore import Regex, ask
 from core.structs import Segment, SegmentSet
-from style import *
+from core.style import *
 
 ZODIACS = '鼠牛虎兔龙蛇马羊猴鸡狗猪'
 DATE_FORMAT = '%Y.%m.%d'

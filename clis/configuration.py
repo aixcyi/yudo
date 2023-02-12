@@ -1,7 +1,7 @@
 import click
 
 from core.click_chore import YuConfiguration
-from style import *
+from core.style import *
 
 
 @click.command('conf', short_help='读取或覆写yudo的配置')

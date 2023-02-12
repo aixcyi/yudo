@@ -7,7 +7,7 @@ import click
 from click.shell_completion import CompletionItem
 
 from core.click_chore import YuConfiguration
-from style import *
+from core.style import *
 
 # print(''.join(map(chr, range(32, 127))))
 CHARSETS = {

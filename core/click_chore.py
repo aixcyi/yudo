@@ -7,7 +7,7 @@ from typing import Pattern
 import click
 from click import ParamType, secho, echo
 
-from style import *
+from core.style import *
 
 cfp = Path(__file__).parent.parent / 'yudo.ini'
 

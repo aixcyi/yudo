@@ -6,7 +6,7 @@ from typing import Pattern
 import click
 
 from core.click_chore import Regex, ask
-from style import *
+from core.style import *
 
 RIGHTS = (7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2)
 
