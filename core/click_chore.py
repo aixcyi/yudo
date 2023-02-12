@@ -1,4 +1,5 @@
 import re
+import typing
 from configparser import ConfigParser
 from io import StringIO
 from pathlib import Path
@@ -6,6 +7,11 @@ from typing import Pattern
 
 import click
 from click import ParamType, secho, echo
+from rich import box
+from rich.console import Console
+from rich.style import Style
+from rich.table import Table
+from rich.text import Text
 
 from core.style import *
 
@@ -89,3 +95,18 @@ class YuConfiguration(ConfigParser):
         if section not in self:
             self.add_section(section)
         return self[section]
+
+
+def get_help(self: click.Context) -> typing.NoReturn:
+    info = self.to_info_dict()['command']['commands']
+    table = Table('Command', 'Description', box=box.SIMPLE_HEAD, row_styles=MT_ROW)
+    for n, h in info.items():
+        if h['deprecated']:
+            n = Text(n, Style(color=MT_DEPRECATED))
+        table.add_row(n, h['short_help'])
+    table.add_row('-v', '查看yudo的版本号')
+    table.add_row('-h', '查看此帮助信息')
+
+    console = Console()
+    console.print(get_help.__doc__)
+    console.print(table)
