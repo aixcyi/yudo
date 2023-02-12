@@ -114,7 +114,7 @@ class RawRange(click.ParamType):
 @click.option('-z', '--zodiacs', help='过滤不在这些生肖年的日期，例如“虎兔龙蛇”。生肖年按公历算。')
 @click.option('-r', '--regex', type=Regex(), help='过滤不能完全匹配正则表达式的(格式化后的)日期。')
 @click.option('-F', '--force', is_flag=True, help='不提示数量，直接穷举输出所有日期。')
-@click.help_option('-h', '--help')
+@click.help_option('-h', '--help', help='列出这份帮助信息。')
 def enum_date(
         fmt: str,
         days: tuple[tuple[date, date, None]],
@@ -172,7 +172,7 @@ def enum_date(
 @click.option('-r', '--regex', type=Regex(), help='过滤不能完全匹配正则表达式的(格式化后的)日期。')
 @click.option('-m', '--millisecond', 'is_ms_base', help='以毫秒为单位（默认是秒）进行穷举。')
 @click.option('-F', '--force', is_flag=True, help='不提示数量，直接穷举输出所有时间。')
-@click.help_option('-h', '--help')
+@click.help_option('-h', '--help', help='列出这份帮助信息。')
 def enum_datetime(
         fmt: str,
         intervals: tuple[tuple[datetime, datetime, None]],

@@ -49,7 +49,7 @@ def beautify_list(values):
 @click.option('-l', '--parse-location', is_flag=True, help='是否解析域名部分。')
 @click.option('-f', '--skip-fragment', is_flag=True,
               help='禁止解析片段部分。当#出现在URL路径中导致结果错误时使用，但可能导致query受污染。')
-@click.help_option('-h', '--help')
+@click.help_option('-h', '--help', help='列出这份帮助信息。')
 def split_url(encoding, parse_location, skip_fragment):
     """
     请求输入并解析一条URL。支持http、ftp等等相似格式的字符串。

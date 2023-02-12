@@ -63,7 +63,7 @@ def search_code(a, b, _code, codes_map):
 @click.option('-r', '--regex', type=Regex(), help='使用正则表达式筛选划代码。')
 @click.option('-T', '--title', help='按名称筛选区划。')
 @click.option('--purify', is_flag=True, help='不输出区划代码对应的名称。')
-@click.help_option('-h', '--help')
+@click.help_option('-h', '--help', help='列出这份帮助信息。')
 def get_adcode(
         detail: str, parent: str,
         provinces, cities, counties, townships, towns,
