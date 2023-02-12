@@ -25,9 +25,9 @@ CHARSETS = {
 }
 assert sorted(CHARSETS['symbol']) == sorted(CHARSETS['symbol_noshift'] + CHARSETS['symbol_shift'])
 
-with YuConfiguration() as configs:
-    configs.save_finally = True
-    configs.ensure('charset').update(CHARSETS)
+with YuConfiguration() as configurations:
+    configurations.save_finally = True
+    configurations.ensure('charset').update(CHARSETS)
 
 
 class Bytes(object):
@@ -221,55 +221,37 @@ def generate_bits(
 
 @click.command('randstr', short_help='随机生成一定长度的字符串')
 @click.argument('length', type=int)
-@click.option('-d', '--digit', is_flag=True, help='向自定义字符集中添加阿拉伯数字。')
-@click.option('-D', '--digit-safe', is_flag=True, help='向自定义字符集中添加阿拉伯数字，除了数字0和1。')
-@click.option('-l', '--lowercase', '-a', is_flag=True, help='向自定义字符集中添加小写字母。')
-@click.option('-L', '--lowercase-safe', is_flag=True, help='向自定义字符集中添加小写字母，除了小写字母l。')
-@click.option('-u', '--uppercase', '-A', is_flag=True, help='向自定义字符集中添加大写字母。')
-@click.option('-U', '--uppercase-safe', is_flag=True, help='向自定义字符集中添加大写字母，除了大写字母I和O。')
-@click.option('-s', '--symbol', is_flag=True, help='向自定义字符集中添加键盘上的所有可见符号。')
-@click.option('-c', '--symbol-normal', is_flag=True, help='向自定义字符集中添加键盘上所有无需shift的可见符号。')
-@click.option('-C', '--symbol-shift', is_flag=True, help='向自定义字符集中添加键盘上所有需要shift的可见符号。')
-@click.option('--b16', '--base16', '-x', is_flag=True, help='使用base16编码字符集。')
-@click.option('--b64', '--base64', is_flag=True, help='使用base64编码字符集，不包含=号。')
-@click.option('-m', '--line-max', type=int, help='每行最多放几个字符。')
+@click.option('-c', '--charset', 'charsets', metavar='CHARSET', multiple=True, help='要添加的字符集的名称。可多选。')
+@click.option('-m', '--line-max', type=int, default=0, help='每行最多放几个字符。')
 @click.help_option('-h', '--help')
 def generate_chars(
         length: int,
-        digit: bool, digit_safe: bool,
-        lowercase: bool, lowercase_safe: bool,
-        uppercase: bool, uppercase_safe: bool,
-        symbol: bool, symbol_normal: bool, symbol_shift: bool,
-        b16: bool, b64: bool,
+        charsets: tuple[str],
         line_max: int,
 ):
     """
     随机生成 LENGTH 个字符。
 
+    如需查看所有字符集，请输入命令 yu conf charset；
+    如果需要添加或修改字符集的字符，请输入命令 yu conf charset.NAME "CHARACTERS"
+
     通常来说，如果要生成按比特数计的字符串，更建议用 randbit 命令。
+
+    对于更高强度的随机生成方式，或者需要实现定向随机，请自定义命令来实现。
     """
-    charset_cus = ''.join([
-        '' if not digit else CHARSETS['digit'],
-        '' if not uppercase else CHARSETS['upper'],
-        '' if not lowercase else CHARSETS['lower'],
-        '' if not digit_safe else CHARSETS['digit_safe'],
-        '' if not uppercase_safe else CHARSETS['upper_safe'],
-        '' if not lowercase_safe else CHARSETS['lower_safe'],
-        '' if not symbol else CHARSETS['symbols'],
-        '' if not symbol_normal else CHARSETS['synbols_noshift'],
-        '' if not symbol_shift else CHARSETS['synbols_shift'],
-    ])
-    if b16:
-        charset = CHARSETS['base16']
-    elif b64:
-        charset = CHARSETS['base64']
-    elif charset_cus:
-        charset = charset_cus
-    else:
+    with YuConfiguration() as configs:
+        section = configs.ensure('charset')
+        for charset in charsets:
+            if charset not in section:
+                click.secho(f'字符集 {charset} 不存在。', err=True, fg=PT_WARNING)
+                return
+        chars = ''.join(section[name] for name in charsets)
+
+    if not chars:
         click.secho('未设置字符集。', err=True, fg=PT_WARNING)
         return
 
-    result = ''.join(choices(charset, k=length))
+    result = ''.join(choices(chars, k=length))
     if line_max > 0:
         for i in range(0, len(result), line_max):
             print(result[i:i + line_max])
