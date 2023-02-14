@@ -12,11 +12,11 @@ __author__ = 'aixcyi'
 
 import click
 
-from clis import interface_list
+import clis
 from core.click_chore import get_help
 
 interfaces = []
-interfaces += interface_list
+interfaces += clis.interface_list
 
 
 @click.group('yu', commands=interfaces)
