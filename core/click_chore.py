@@ -180,6 +180,8 @@ def get_help(self: click.Context) -> typing.NoReturn:
         if info['deprecated']:
             name = Text(name, Style(color=MT_DEPRECATED))
         table.add_row(name, info['short_help'])
+
+    table.add_row(Text('start', Style(color=MT_SPECIAL)), '切换到conda环境来使用yudo')
     table.add_row('-v', '查看yudo的版本号')
     table.add_row('-h', '查看此帮助信息')
 

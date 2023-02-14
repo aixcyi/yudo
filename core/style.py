@@ -9,7 +9,8 @@ ClickColorName: TypeAlias = str
 MT_ROW_LIGHT = RichColorName('')
 MT_ROW_DARK = RichColorName('grey50')
 MT_ROW = [MT_ROW_DARK, MT_ROW_LIGHT]
-MT_DEPRECATED = RichColorName('dark_goldenrod')
+MT_DEPRECATED = RichColorName('cyan')
+MT_SPECIAL = RichColorName('dark_goldenrod')
 
 # Printable Text
 PT_INPUT_TIP = ClickColorName('cyan')
@@ -20,5 +21,5 @@ PT_CONF_SECTION = ClickColorName('yellow')
 PT_CONF_KEY = ClickColorName('cyan')
 PT_CONF_EQU = ClickColorName('yellow')
 
-# url
+# > yu url
 URL_SECURITY_PROTOCOL = RichColorName('green')
