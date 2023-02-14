@@ -110,8 +110,13 @@ def get_length(encoding: str):
     """
     获取输入文本的字符数和字节数。
     """
-    click.secho('输入任意字符串：', err=True, nl=False, fg=PT_INPUT_TIP)
+    click.secho('字符串：', err=True, nl=False, fg=PT_INPUT_TIP)
     text = input()
-    binary = text.encode(encoding=encoding)
+    try:
+        binary = text.encode(encoding=encoding)
+    except LookupError:
+        click.secho(f'无法将字符串转换到 {encoding} 编码。', err=True, fg=PT_WARNING)
+        return
     print(f'字符数：{len(text)}')
-    print(f'字节数：{len(binary)} (={len(binary)*8} bits)')
+    print(f'字节数：{len(binary)}（{encoding}）')
+    print(f'比特数：{len(binary)*8}')
