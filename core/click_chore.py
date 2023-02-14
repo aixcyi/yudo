@@ -172,12 +172,14 @@ class YuConfiguration(PortableConfiguration):
 
 
 def get_help(self: click.Context) -> typing.NoReturn:
-    info = self.to_info_dict()['command']['commands']
+    commands = self.to_info_dict()['command']['commands']
     table = Table('Command', 'Description', box=box.SIMPLE_HEAD, row_styles=MT_ROW)
-    for n, h in info.items():
-        if h['deprecated']:
-            n = Text(n, Style(color=MT_DEPRECATED))
-        table.add_row(n, h['short_help'])
+    for name, info in commands.items():
+        if info['hidden']:
+            continue
+        if info['deprecated']:
+            name = Text(name, Style(color=MT_DEPRECATED))
+        table.add_row(name, info['short_help'])
     table.add_row('-v', '查看yudo的版本号')
     table.add_row('-h', '查看此帮助信息')
 
