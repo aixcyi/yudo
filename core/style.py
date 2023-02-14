@@ -12,6 +12,7 @@ MT_ROW = [MT_ROW_DARK, MT_ROW_LIGHT]
 MT_DEPRECATED = RichColorName('dark_goldenrod')
 
 # Printable Text
+PT_INPUT_TIP = ClickColorName('cyan')
 PT_WARNING = ClickColorName('yellow')
 PT_ERROR = ClickColorName('red')
 PT_SPECIAL = ClickColorName('magenta')

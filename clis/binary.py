@@ -22,6 +22,8 @@ CHARSETS = {
     'symbol_shift': r'~!@#$%^&*()_+{}|:"<>?',
     'base16': '0123456789ABCDEF',
     'base64': '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/',
+    'base36': '0123456789ABCDEFGHIJKLMNOPQRSTUVWXY',
+    'base62': '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
 }
 assert sorted(CHARSETS['symbol']) == sorted(CHARSETS['symbol_noshift'] + CHARSETS['symbol_shift'])
 

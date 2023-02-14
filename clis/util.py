@@ -102,3 +102,16 @@ def decode_uri(plus: bool, encoding: str):
     click.secho('输入任意字符串：', err=True, nl=False)
     translate = unquote_plus if plus else unquote
     print(translate(input(), encoding=encoding))
+
+
+@click.command('len', short_help='测量输入文本的字符数和字节数')
+@click.option('-e', '--encoding', default='UTF-8', help='用何种编码转换文本。默认是UTF-8。')
+def get_length(encoding: str):
+    """
+    获取输入文本的字符数和字节数。
+    """
+    click.secho('输入任意字符串：', err=True, nl=False, fg=PT_INPUT_TIP)
+    text = input()
+    binary = text.encode(encoding=encoding)
+    print(f'字符数：{len(text)}')
+    print(f'字节数：{len(binary)} (={len(binary)*8} bits)')
