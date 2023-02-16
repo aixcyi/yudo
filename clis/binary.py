@@ -6,7 +6,7 @@ from typing import Any, Final
 import click
 from click.shell_completion import CompletionItem
 
-from core.click_chore import YuConfiguration
+from core.click_chore import YudoConfigs
 from core.style import *
 
 # print(''.join(map(chr, range(32, 127))))
@@ -27,9 +27,9 @@ CHARSETS = {
 }
 assert sorted(CHARSETS['symbol']) == sorted(CHARSETS['symbol_noshift'] + CHARSETS['symbol_shift'])
 
-with YuConfiguration() as configurations:
-    configurations.save_finally = True
-    configurations.ensure('charset').update(CHARSETS)
+with YudoConfigs(auto_patch=True) as configurations:
+    configurations['charset'].update(CHARSETS)
+    configurations.save()
 
 
 class Bytes(object):
@@ -241,7 +241,7 @@ def generate_chars(
 
     对于更高强度的随机生成方式，或者需要实现定向随机，请自定义命令来实现。
     """
-    with YuConfiguration() as configs:
+    with YudoConfigs() as configs:
         section = configs.ensure('charset')
         for charset in charsets:
             if charset not in section:

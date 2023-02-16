@@ -53,44 +53,65 @@ def ask(dateset, force: bool) -> bool:
     return True
 
 
-class PortableConfiguration(ConfigParser):
+class AutoReadConfigPaser(ConfigParser):
 
-    def __init__(self, cfp, save_finally=False, auto_section=False, *args, **kwargs):
-        self.cfp = cfp
-        self.save_finally = save_finally
-        self.auto_section = auto_section
-        super().__init__(*args, **kwargs)
+    def __init__(
+            self, cfp, *args,
+            auto_save=False,
+            auto_patch=False,
+            interpolation=None,
+            encoding='UTF-8',
+            **kwargs,
+    ):
+        """
+        能够自动读取文件的配置文件解析器。
+
+        :param cfp: 配置文件地址。
+        :param auto_save: with 语句结束时自动保存。
+        :param auto_patch: 访问 section 时，如果不存在则自动创建。
+        :param interpolation: 不解析配置值中的引用写法。
+        :param encoding: 文件编码。默认是 UTF-8 。
+        :param args: ConfigParser 的位置参数。
+        :param kwargs: ConfigParser 的命名参数。
+        """
+        self._cfp = cfp
+        self._save = auto_save
+        self._patch = auto_patch
+        self._encoding = encoding
+        super().__init__(*args, interpolation=interpolation, **kwargs)
 
     def __getitem__(self, key: str) -> SectionProxy:
         if key != self.default_section and not self.has_section(key):
-            if self.auto_section:
-                self.__setitem__(key, {})
-            else:
-                raise KeyError(key)
+            if self._patch:
+                self.add_section(key)
         return self._proxies[key]
 
     def __enter__(self):
-        self.read(self.cfp, encoding='UTF-8')
+        self.read(self._cfp, encoding=self._encoding)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.save_finally:
-            with open(self.cfp, 'w', encoding='UTF-8') as f:
-                self.write(f)
+        if self._save:
+            self.save()
 
-    def ensure(self, section: str):
-        if section not in self:
-            self.add_section(section)
-        return self[section]
+    def save(self):
+        with open(self._cfp, 'w', encoding='UTF-8') as f:
+            self.write(f)
 
     def gettext(self):
         with StringIO() as f:
             self.write(f)
             return f.getvalue()
 
+    def print_section(self, section: str):
+        for k in self[section]:
+            click.secho(k, nl=False, fg=PT_CONF_KEY)
+            click.secho(' = ', nl=False, fg=PT_CONF_EQU)
+            click.secho(self[section][k])
+
     def print_all(self, nl=False):
         for title, section in self.items():
-            if title == 'DEFAULT':
+            if title == self.default_section:
                 continue
             click.secho('[', fg=PT_CONF_SECTION, nl=False)
             click.secho(title, nl=False)
@@ -103,49 +124,8 @@ class PortableConfiguration(ConfigParser):
                 if nl is True:
                     click.echo()
 
-    def print_section(self, section: SectionProxy | str):
-        if isinstance(section, str):
-            section = self[section]
-        elif isinstance(section, SectionProxy):
-            pass
-        else:
-            raise TypeError()
 
-        for k in section:
-            click.secho(k, nl=False, fg=PT_CONF_KEY)
-            click.secho(' = ', nl=False, fg=PT_CONF_EQU)
-            click.secho(section[k])
-
-    def curd(self, section: str = '', key: str = '', value: str | None = None):
-        # 枚举所有节
-        if not section:
-            self.print_all(nl=True)
-
-        # 枚举一整节
-        elif section and not key:
-            if section not in self:
-                click.secho(f'找不到 {section} 。', err=True, fg=PT_WARNING)
-                click.secho('注意：节名称是区分大小写的。', err=True, fg=PT_SPECIAL)
-                return
-            self.print_section(section)
-
-        # 打印某个配置项
-        elif section and key and value is None:
-            if section not in self:
-                click.secho(f'找不到 {section} 。', err=True, fg=PT_WARNING)
-                return
-            if key not in self[section]:
-                click.secho(f'找不到 {section} 下的 {key}。', err=True, fg=PT_WARNING)
-                return
-            click.secho(self[section][key])
-
-        # 设置配置值
-        elif section and key and value is not None:
-            self.save_finally = True
-            self.ensure(section)[key] = value
-
-
-class YuConfiguration(PortableConfiguration):
+class YudoConfigs(AutoReadConfigPaser):
 
     def __init__(self, *args, **kwargs):
         cfp = Path(__file__).parent.parent / 'yudo.ini'

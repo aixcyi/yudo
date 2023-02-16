@@ -8,6 +8,7 @@ from rich.style import Style
 from rich.table import Table
 from rich.text import Text
 
+from core.click_chore import YudoConfigs
 from core.style import *
 
 
