@@ -82,24 +82,25 @@ def frpc_list_configs():
         console.print(table)
 
 
-@manage_frpc.command('get', short_help='查看frpc某一个配置')
-@click.argument('key', metavar='[SECTION[.KEY]]', default='', required=False)
-@click.option('-c', '--config', 'filename', metavar='NAME', help='要查看哪个配置文件，提供简短名称即可。')
-def frpc_get_configs(
-        key: str, filename: str | None,
+@manage_frpc.command('set', short_help='查看或修改frpc的配置')
+@click.argument('key', metavar='SECTION[.KEY', default='', required=False)
+@click.argument('value', metavar='NEW_VALUE', required=False)
+@click.option('-c', '--config', 'filename', metavar='NAME',
+              help='要修改哪个配置文件，提供简短名称即可。比如 frpc_full.ini 的简短名称就是 full')
+@click.help_option('-h', '--help', help='列出这份帮助信息。')
+def frpc_set_configs(
+        key: str, value: str | None, filename: str | None,
 ):
     """
-    查看 frp 客户端（frpc）的配置。
+    设置一个配置项，或者查看配置项。
 
     例如：
-      - 打印文件："yu frpc get"
-      - 打印某节："yu frpc get common"
-      - 打印配置："yu frpc get common.server_port"
+      - 打印文件："yu frpc set"
+      - 打印某节："yu frpc set common"
+      - 打印配置："yu frpc set common.server_port"
+      - 修改配置："yu frpc set common.server_port 65535"
 
-    打印 frpc_full.ini 的
-      - 文件："yu frpc get -c full"
-      - 某节："yu frpc get common -c full"
-      - 配置："yu frpc get common.server_port -c full"
+    默认围绕 frpc.ini 进行操作，假设要对  frpc_full.ini 操作，就需要附加 -c full 选项。
     """
     if not (cfp := get_cfp(filename)):
         return
@@ -107,8 +108,7 @@ def frpc_get_configs(
     if not section:
         section, key = key, ''
 
-    with AutoReadConfigPaser(cfp) as configs:
-
+    with AutoReadConfigPaser(cfp, auto_patch=True) as configs:
         # 打印整个配置文件
         if not section:
             configs.print_all(nl=True)
@@ -124,43 +124,18 @@ def frpc_get_configs(
             configs.print_section(section)
             return
 
-        # 打印具体配置
         if key not in configs[section]:
             click.secho(f'在 {section} 中找不到 {key} 。', err=True, fg=PT_WARNING)
             click.secho('注意：名称是区分大小写的。', err=True, fg=PT_SPECIAL)
             return
-        click.secho(configs[section][key])
 
-
-@manage_frpc.command('set', short_help='修改frpc某一个配置')
-@click.argument('key', metavar='SECTION[.KEY', default='', required=False)
-@click.argument('value', metavar='NEW_VALUE', required=False)
-@click.option('-c', '--config', 'filename', metavar='NAME', help='要修改哪个配置文件，提供简短名称即可。')
-@click.help_option('-h', '--help', help='列出这份帮助信息。')
-def frpc_set_configs(
-        key: str, value: str | None, filename: str | None, list_all: bool,
-):
-    """
-    设置单份frpc配置，管理多份frpc配置。
-    """
-    if not (path := get_cfp()):
-        return
-    cfp = path / (f'frpc_{filename}.ini' if filename else 'frpc.ini')
-    if not cfp.exists():
-        click.secho(f'配置文件 {cfp!s} 不存在。\n是否创建？(Y/[n]) ', err=True, nl=False, fg=PT_WARNING)
-        if input()[:0] != 'Y':
+        # 打印具体配置
+        if not value:
+            click.secho(configs[section][key])
             return
-        cfp.touch()
-    if not cfp.is_file():
-        click.secho(f'路径 {cfp!s} 不是一个文件。', err=True, fg=PT_WARNING)
-        return None
 
-    section, _, key = key.rpartition('.')
-    if not section:
-        section, key = key, ''
-
-    with AutoReadConfigPaser(cfp, auto_section=True) as configs:
-        configs.curd(section, key, value)
+        configs[section][key] = value
+        configs.save()
 
 
 @manage_frpc.command('run', short_help='运行frp客户端')
