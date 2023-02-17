@@ -1,3 +1,5 @@
+import os
+import re
 from typing import NamedTuple
 from urllib.parse import urlsplit, parse_qs, quote_plus, quote, unquote, unquote_plus
 
@@ -120,4 +122,44 @@ def get_length(encoding: str):
         return
     print(f'字符数：{len(text)}')
     print(f'字节数：{len(binary)}（{encoding}）')
-    print(f'比特数：{len(binary)*8}')
+    print(f'比特数：{len(binary) * 8}')
+
+
+@click.command('exec', short_help='执行自定义的指令')
+@click.argument('name', required=False)
+@click.argument('command', required=False)
+@click.help_option('-h', '--help', help='列出这份帮助信息。')
+def run_command(name, command: str | None):
+    """
+    执行自定义的指令，或者修改指令的命令行。
+    """
+    with YudoConfigs(auto_patch=True) as configs:
+
+        # 什么都没有提供，就列出所有指令
+        if not name:
+            configs.print_section('alias')
+            return
+
+        # 提供了指令和命令行，表示创建或覆盖
+        if command:
+            configs['alias'][name] = command
+            configs.save()
+            return
+
+        # 只提供了指令名称，表示执行
+        if name not in configs['alias']:
+            click.secho(f'没有找到 {name} 指令。\n'
+                        f'使用命令行 yu run {name} "YOUR_COMMANDS" 来设置指令的具体操作。',
+                        err=True, fg=PT_WARNING)
+        command = configs['alias'][name]
+
+    # 提示输入并替换命令行中的 @(key)
+    expression = re.compile(r'@\(([^)]*)\)')
+    values = [
+        input(f'输入 {result.group(1)}：')
+        for result in re.findall(expression, command)
+    ]
+    for v in values:
+        command = re.sub(expression, v, command, 1)
+
+    os.system(command)
