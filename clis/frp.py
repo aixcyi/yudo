@@ -166,21 +166,21 @@ def frpc_set_configs(
 @manage_frpc.command('run', short_help='运行frp客户端')
 @click.option('-c', '--config', 'filename', metavar='NAME',
               help='用某个配置文件来运行。提供简短名称。使用 yu frpc conf -l 查看所有。')
-@click.option('-s', '--set', 'new_conf', metavar='SECTION.KEY VALUE',
+@click.option('-s', '--set', 'new_configs', metavar='SECTION.KEY VALUE',
               multiple=True, nargs=2, help='修改并保存配置后再运行。')
-def run_frpc(filename: str | None, new_conf: tuple[str, str] | None):
+def run_frpc(filename: str | None, new_configs: tuple[tuple[str, str]] | None):
     if not (cfp := get_cfp(filename)):
         return
 
-    if new_conf:
-        snk, value = new_conf
-        section, _, key = snk.rpartition('.')
-        if not all([section, key, value]):
-            click.secho(f'配置格式无法解析。', err=True, fg=PT_WARNING)
-            return None
-
+    if new_configs:
         with AutoReadConfigPaser(cfp, auto_patch=True) as configs:
-            configs[section][key] = value
-            configs.save()
+            for c in new_configs:
+                snk, value = c
+                section, _, key = snk.rpartition('.')
+                if not all([section, key, value]):
+                    click.secho(f'配置格式无法解析。', err=True, fg=PT_WARNING)
+                    return None
+                configs[section][key] = value
+                configs.save()
 
     os.execl(cfp.parent / 'frpc', 'http', '-c', str(cfp))
