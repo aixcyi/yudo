@@ -168,7 +168,13 @@ def frpc_set_configs(
               help='用某个配置文件来运行。提供简短名称。使用 yu frpc conf -l 查看所有。')
 @click.option('-s', '--set', 'new_configs', metavar='SECTION.KEY VALUE',
               multiple=True, nargs=2, help='修改并保存配置后再运行。')
-def run_frpc(filename: str | None, new_configs: tuple[tuple[str, str]] | None):
+@click.option('-p', '-print', 'print_it', is_flag=True,
+              help='运行前打印文件中的所有配置。')
+def run_frpc(
+        filename: str | None,
+        new_configs: tuple[tuple[str, str]] | None,
+        print_it: bool,
+):
     if not (cfp := get_cfp(filename)):
         return
 
@@ -182,5 +188,9 @@ def run_frpc(filename: str | None, new_configs: tuple[tuple[str, str]] | None):
                     return None
                 configs[section][key] = value
                 configs.save()
+
+    if print_it:
+        with AutoReadConfigPaser(cfp, auto_patch=True) as configs:
+            configs.print_all()
 
     os.execl(cfp.parent / 'frpc', 'http', '-c', str(cfp))
