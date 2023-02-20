@@ -107,6 +107,8 @@ class AutoReadConfigPaser(ConfigParser):
         if key != self.default_section and not self.has_section(key):
             if self._patch:
                 self.add_section(key)
+            else:
+                raise KeyError(key)
         return self._proxies[key]
 
     def __enter__(self):
