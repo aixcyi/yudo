@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Pattern
 
 import click
-from click import ParamType, secho, echo
+from click import ParamType, secho, echo, Command
 from rich import box
 from rich.console import Console
 from rich.style import Style
@@ -206,3 +206,10 @@ def get_help(self: click.Context) -> typing.NoReturn:
     console = Console()
     console.print(get_help.__doc__)
     console.print(table)
+
+
+def cmd(*args) -> str:
+    return 'yu ' + ' '.join(
+        arg.name if isinstance(arg, Command) else arg
+        for arg in args
+    )

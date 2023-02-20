@@ -7,8 +7,9 @@ from rich import box
 from rich.console import Console
 from rich.table import Table
 
-from core.click_chore import YudoConfigs, AutoReadConfigPaser
+from core.click_chore import YudoConfigs, AutoReadConfigPaser, cmd
 from core.style import *
+from .configurator import configurate
 
 
 def get_cfp(short_name='', prefix='frpc') -> Path | None:
@@ -24,18 +25,18 @@ def get_cfp(short_name='', prefix='frpc') -> Path | None:
         try:
             path = Path(configs['frp']['path'])
         except KeyError:
-            click.secho('未设置frp的安装目录。可以使用以下命令设置：\n'
-                        'yu config frp.path YOUR_INSTALL_PATH',
+            click.secho('未设置frp的安装目录。可以使用以下命令设置：\n' +
+                        cmd(configurate, 'frp.path=YOUR_INSTALL_PATH'),
                         err=True, fg=PT_WARNING)
             return None
         if not path.is_dir():
-            click.secho('设置的不是一个目录。可以使用以下命令修改frp安装目录：\n'
-                        'yu config frp.path YOUR_INSTALL_PATH',
+            click.secho('设置的不是一个目录。请使用以下命令修改frp安装目录：\n' +
+                        cmd(configurate, 'frp.path=YOUR_INSTALL_PATH'),
                         err=True, fg=PT_WARNING)
             return None
         if not path.exists():
-            click.secho('设置的frp安装目录不存在。可以使用以下命令重新设置：\n'
-                        'yu config frp.path YOUR_INSTALL_PATH',
+            click.secho('设置的frp安装目录不存在。请使用以下命令重新设置：\n' +
+                        cmd(configurate, 'frp.path=YOUR_INSTALL_PATH'),
                         err=True, fg=PT_WARNING)
             return None
 
@@ -59,8 +60,6 @@ def get_cfp(short_name='', prefix='frpc') -> Path | None:
 def manage_frpc():
     """
     管理、配置、运行frp客户端（frpc）。
-
-    使用前要先配置frp的安装目录，命令是 yu conf frp.path YOUR_PATH。
     """
 
 
@@ -74,8 +73,10 @@ def frpc_list_configs():
         result = re.fullmatch(r'frpc_?(.*)\.ini', d.name)
         if not result:
             continue
-        name = result.group(1)
-        command = f'yu frpc get -c {name}' if name else 'yu frpc get'
+        if name := result.group(1):
+            command = cmd(manage_frpc, frpc_set_configs, '-c', name)
+        else:
+            command = cmd(manage_frpc, frpc_set_configs)
         table.add_row(name, d.name, command)
     else:
         console = Console()
