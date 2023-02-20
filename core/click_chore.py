@@ -103,6 +103,11 @@ class AutoReadConfigPaser(ConfigParser):
             self.write(f)
             return f.getvalue()
 
+    def setdefaults(self, section: str, **kvs):
+        partition = self[section]
+        for k, v in kvs.items():
+            partition.setdefault(k, v)
+
     def print_section(self, section: str):
         for k in self[section]:
             click.secho(k, nl=False, fg=PT_CONF_KEY)

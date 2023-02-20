@@ -28,7 +28,7 @@ CHARSETS = {
 assert sorted(CHARSETS['symbol']) == sorted(CHARSETS['symbol_noshift'] + CHARSETS['symbol_shift'])
 
 with YudoConfigs(auto_patch=True) as configurations:
-    configurations['charset'].update(CHARSETS)
+    configurations.setdefaults('charset', **CHARSETS)
     configurations.save()
 
 
