@@ -1,6 +1,6 @@
 from clis.adcode import get_adcode
 from clis.binary import generate_bits, generate_chars
-from clis.configuration import configurate
+from clis.configurator import configurate
 from clis.datetime import enum_date, enum_datetime
 from clis.frp import manage_frpc
 from clis.idcard import enum_prcid

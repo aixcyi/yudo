@@ -55,6 +55,24 @@ def ask(dateset, force: bool) -> bool:
 
 class AutoReadConfigPaser(ConfigParser):
 
+    @staticmethod
+    def parse_path(pattern: str | None) -> tuple[str, str, str]:
+        """
+        按照表达式 [SECTION[.KEY[=VALUE]]] 解析输入值。
+
+        默认允许 SECTION 包含 “.” 字符，而 KEY 不允许。
+
+        :param pattern:
+        :return: 返回 section，key，value 三个值。
+        """
+        if pattern is None:
+            return '', '', ''
+        _path, _, value = pattern.partition('=')
+        section, _, key = _path.rpartition('.')
+        if not section:
+            section, key = key, ''
+        return section, key, value
+
     def __init__(
             self, cfp, *args,
             auto_save=False,
@@ -128,6 +146,21 @@ class AutoReadConfigPaser(ConfigParser):
             else:
                 if nl is True:
                     click.echo()
+
+    def check_section(self, section: str) -> bool:
+        if section not in self:
+            click.secho(f'找不到 {section} 。', err=True, fg=PT_WARNING)
+            click.secho('注意：节名称是区分大小写的。', err=True, fg=PT_SPECIAL)
+            return False
+        return True
+
+    def check_key(self, section: str, key: str) -> bool:
+        if self.check_section(section) is False:
+            return False
+        if key not in self[section]:
+            click.secho(f'找不到 {section} 下的 {key}。', err=True, fg=PT_WARNING)
+            return False
+        return True
 
 
 class YudoConfigs(AutoReadConfigPaser):
