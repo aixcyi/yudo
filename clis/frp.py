@@ -7,7 +7,7 @@ from rich import box
 from rich.console import Console
 from rich.table import Table
 
-from core.click_chore import YudoConfigs, AutoReadConfigPaser, cmd
+from core.click_chore import YudoConfigs, AutoReadConfigPaser, cmd, ask
 from core.style import *
 from .configurator import configurate
 
@@ -44,8 +44,7 @@ def get_cfp(short_name='', prefix='frpc') -> Path | None:
     # 并校验文件存在和属性
     cfp = path / (f'{prefix}_{short_name}.ini' if short_name else f'{prefix}.ini')
     if not cfp.exists():
-        click.secho(f'配置文件 {cfp!s} 不存在。\n是否创建？(Y/[n]) ', err=True, nl=False, fg=PT_WARNING)
-        if input()[:1] != 'Y':
+        if not ask(f'配置文件 {cfp!s} 不存在。\n是否创建？(Y/[n]) '):
             return None
         cfp.touch()
     if not cfp.is_file():

@@ -7,7 +7,7 @@ from math import ceil
 
 from click import Parameter, Context, ParamType, command, option, help_option
 
-from core.click_chore import fmt_datasize
+from core.click_chore import fmt_datasize, ask
 from core.structs import SegmentSet, Segment
 
 RIGHTS = (7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2)
@@ -157,10 +157,8 @@ def enum_prcid(
     qty = ceil(qty / 11 * len(checksum)) if checksum else qty
     dsz = fmt_datasize(qty * 20)
     tip = f'预估数据量 {qty:d} 条，文本 {dsz}，确定继续？(Y/n)'
-    if force is False:
-        print(tip, end=' ', file=sys.stderr)
-        if input()[:1] != 'Y':
-            return
+    if not ask(force=force, tips=tip):
+        return
 
     ids = map(patch_checksum, product(codes, births, seqs))
     ids = filter(lambda i: i[-1] in checksum, ids) if checksum else ids

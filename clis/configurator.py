@@ -1,7 +1,6 @@
 import click
 
-from core.click_chore import YudoConfigs
-from core.style import *
+from core.click_chore import YudoConfigs, ask
 
 
 @click.command('conf', short_help='读取或覆写yudo的配置')
@@ -47,8 +46,7 @@ def remove_configuration(pattern: str):
         if section and key:
             if not configs.check_key(section, key):
                 return
-            click.secho('是否确认删除？(Y/[n]) ', err=True, nl=False, fg=PT_WARNING)
-            if input()[:1] != 'Y':
+            if not ask('是否确认删除？(Y/[n]) '):
                 return
             _ = configs[section].pop(key)
 
@@ -56,7 +54,6 @@ def remove_configuration(pattern: str):
         elif section and not key:
             if not configs.check_section(section):
                 return
-            click.secho('是否删除一整节？(Y/[n]) ', err=True, nl=False, fg=PT_WARNING)
-            if input()[:1] != 'Y':
+            if not ask('是否删除一整节？(Y/[n]) '):
                 return
             configs.remove_section(section)

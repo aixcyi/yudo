@@ -150,7 +150,7 @@ def enum_date(
     dates = map(lambda d: d.strftime(fmt), dates)
     dates = filter(lambda d: re.fullmatch(regex, d), dates) if regex else dates
     dates = tuple(dates)
-    if ask(dates, force):
+    if ask(force=force, dataset=dates):
         print('\n'.join(dates))
 
 
@@ -203,5 +203,5 @@ def enum_datetime(
     moments = map(lambda d: d.strftime(fmt), moments)
     moments = filter(lambda d: re.fullmatch(regex, d), moments) if regex else moments
     moments = tuple(moments)
-    if ask(moments, force):
+    if ask(force=force, dataset=moments):
         print('\n'.join(moments))

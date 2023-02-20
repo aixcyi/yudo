@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Pattern
 
 import click
-from click import ParamType, secho, echo, Command
 from rich import box
 from rich.console import Console
 from rich.style import Style
@@ -29,7 +28,7 @@ def fmt_datasize(size: int) -> str:
         return f'{size / 1024 ** 4:.2f} TB'
 
 
-class Regex(ParamType):
+class Regex(click.ParamType):
     name = 'regex'
 
     def convert(self, value: str, param, ctx) -> Pattern:
@@ -39,15 +38,21 @@ class Regex(ParamType):
             self.fail('正则表达式有误。', param, ctx)
 
 
-def ask(dateset, force: bool) -> bool:
-    qty = len(dateset)
-    dsz = fmt_datasize(len(dateset[0]) * qty if dateset else 0)
-    tip = f'预估数据量 {qty:d} 条，文本 {dsz}，确定继续？(Y/[n]) '
-    if qty == 0:
-        secho('没有产生任何数据。', err=True, fg=PT_WARNING)
-        return False
-    if force is False:
-        echo(tip, err=True, nl=False)
+def ask(tips: str = None, force: bool = False, dataset=None) -> bool:
+    if dataset:
+        qty = len(dataset)
+        dsz = fmt_datasize(len(dataset[0]) * qty if dataset else 0)
+        tip = tips if tips else f'预估数据量 {qty:d} 条，文本 {dsz}，确定继续？(Y/[n]) '
+        if qty == 0:
+            click.secho('没有产生任何数据。', err=True, fg=PT_WARNING)
+            return False
+        if force is False:
+            click.echo(tip, err=True, nl=False)
+            if input()[:1] != 'Y':
+                return False
+    else:
+        tip = tips if tips else '是否继续？(Y/[n]) '
+        click.secho(tip, err=True, nl=False, fg=PT_WARNING)
         if input()[:1] != 'Y':
             return False
     return True
@@ -210,6 +215,6 @@ def get_help(self: click.Context) -> typing.NoReturn:
 
 def cmd(*args) -> str:
     return 'yu ' + ' '.join(
-        arg.name if isinstance(arg, Command) else arg
+        arg.name if isinstance(arg, click.Command) else arg
         for arg in args
     )

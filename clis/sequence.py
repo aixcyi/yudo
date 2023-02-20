@@ -57,5 +57,5 @@ def product_columns(
     if regex:
         data = filter(lambda s: fullmatch(regex, ''.join(s)), data)
 
-    if ask(data, force):
+    if ask(force=force, dataset=data):
         print('\n'.join(data))
