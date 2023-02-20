@@ -3,7 +3,6 @@ import typing
 from configparser import ConfigParser, SectionProxy
 from io import StringIO
 from pathlib import Path
-from typing import Pattern
 
 import click
 from rich import box
@@ -31,7 +30,7 @@ def fmt_datasize(size: int) -> str:
 class Regex(click.ParamType):
     name = 'regex'
 
-    def convert(self, value: str, param, ctx) -> Pattern:
+    def convert(self, value: str, param, ctx) -> typing.Pattern:
         try:
             return re.compile(value)
         except re.error:
@@ -119,16 +118,28 @@ class AutoReadConfigPaser(ConfigParser):
         if self._save:
             self.save()
 
-    def save(self):
+    def save(self) -> typing.NoReturn:
+        """
+        保存到文件中。
+        """
         with open(self._cfp, 'w', encoding='UTF-8') as f:
             self.write(f)
 
-    def gettext(self):
+    def gettext(self) -> str:
+        """
+        获取当前配置的文本表示。
+        """
         with StringIO() as f:
             self.write(f)
             return f.getvalue()
 
-    def setdefaults(self, section: str, **kvs):
+    def setdefaults(self, section: str, **kvs) -> typing.NoReturn:
+        """
+        设置多个默认值。
+
+        :param section: 节名称。
+        :param kvs: 键名称及默认值。
+        """
         partition = self[section]
         for k, v in kvs.items():
             partition.setdefault(k, v)
