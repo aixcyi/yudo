@@ -7,12 +7,12 @@
 @SET CONDA_ENV="yudo"
 
 @REM 如果 yu start 无法启动conda环境，请尝试修改以下配置。
-@SET CONDA_PATH="C:\ProgramData\Miniconda3\condabin"
+@SET CONDA_PATH="C:\ProgramData\Miniconda3\condabin\"
 
 TITLE yudo
 CD %~dp0
 IF "%1"=="start" (
-    %CONDA_PATH%\conda activate %CONDA_ENV%
+    %CONDA_PATH%conda activate %CONDA_ENV%
 ) ELSE (
     CMD /C "%PYTHON_PATH%python %~dp0\main.py %*"
 )
