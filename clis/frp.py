@@ -44,7 +44,7 @@ def get_cfp(short_name='', prefix='frpc') -> Path | None:
     cfp = path / (f'{prefix}_{short_name}.ini' if short_name else f'{prefix}.ini')
     if not cfp.exists():
         click.secho(f'配置文件 {cfp!s} 不存在。\n是否创建？(Y/[n]) ', err=True, nl=False, fg=PT_WARNING)
-        if input()[:0] != 'Y':
+        if input()[:1] != 'Y':
             return None
         cfp.touch()
     if not cfp.is_file():
