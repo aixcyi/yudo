@@ -131,8 +131,8 @@ class YudoConfigs(AutoReadConfigPaser):
         cfp = Path(__file__).parent.parent / 'yudo.ini'
         super().__init__(cfp, *args, **kwargs)
 
-    def get(self, section: str, option: str, *, raw=False, vars=None, fallback=object()) -> str:
-        value = super().get(section, option, raw=raw, vars=vars, fallback=fallback)
+    def get(self, section: str, option: str, *, raw=False, variables=None, fallback=object()) -> str:
+        value = super().get(section, option, raw=raw, vars=variables, fallback=fallback)
         if section == 'charset':
             try:
                 value = str(bytes.fromhex(value), encoding='ASCII')
