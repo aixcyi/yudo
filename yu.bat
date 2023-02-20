@@ -10,7 +10,6 @@
 @SET CONDA_PATH="C:\ProgramData\Miniconda3\condabin\"
 
 TITLE yudo
-CD %~dp0
 IF "%1"=="start" (
     %CONDA_PATH%conda activate %CONDA_ENV%
 ) ELSE (
