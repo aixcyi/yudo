@@ -37,6 +37,10 @@ class Regex(click.ParamType):
             self.fail('正则表达式有误。', param, ctx)
 
 
+def warning(*line, nl=True, fg=PT_WARNING):
+    click.secho('\n'.join(line), nl=nl, err=True, fg=fg)
+
+
 def ask(tips: str = None, force: bool = False, dataset=None) -> bool:
     if dataset:
         qty = len(dataset)
@@ -144,42 +148,6 @@ class AutoReadConfigPaser(ConfigParser):
         for k, v in kvs.items():
             partition.setdefault(k, v)
 
-    def print_section(self, section: str):
-        for k in self[section]:
-            click.secho(k, nl=False, fg=PT_CONF_KEY)
-            click.secho(' = ', nl=False, fg=PT_CONF_EQU)
-            click.secho(self[section][k])
-
-    def print_all(self, nl=False):
-        for title, section in self.items():
-            if title == self.default_section:
-                continue
-            click.secho('[', fg=PT_CONF_SECTION, nl=False)
-            click.secho(title, nl=False)
-            click.secho(']', fg=PT_CONF_SECTION)
-            for _key in section:
-                click.secho(_key, fg=PT_CONF_KEY, nl=False)
-                click.secho('=', fg=PT_CONF_EQU, nl=False)
-                click.secho(section[_key])
-            else:
-                if nl is True:
-                    click.echo()
-
-    def check_section(self, section: str) -> bool:
-        if section not in self:
-            click.secho(f'找不到 {section} 。', err=True, fg=PT_WARNING)
-            click.secho('注意：节名称是区分大小写的。', err=True, fg=PT_SPECIAL)
-            return False
-        return True
-
-    def check_key(self, section: str, key: str) -> bool:
-        if self.check_section(section) is False:
-            return False
-        if key not in self[section]:
-            click.secho(f'找不到 {section} 下的 {key}。', err=True, fg=PT_WARNING)
-            return False
-        return True
-
 
 class YudoConfigs(AutoReadConfigPaser):
 
@@ -231,3 +199,66 @@ def cmd(*args) -> str:
         arg.name if isinstance(arg, click.Command) else arg
         for arg in args
     )
+
+
+def curd(parser, pattern: str, delete_it: bool):
+    section, key, value = AutoReadConfigPaser.parse_path(pattern)
+
+    with parser as configs:
+
+        # 枚举所有节
+        if not section:
+            for title, section in configs.items():
+                if title == configs.default_section:
+                    continue
+                click.secho('[', fg=PT_CONF_SECTION, nl=False)
+                click.secho(title, nl=False)
+                click.secho(']', fg=PT_CONF_SECTION)
+                for _key in section:
+                    click.secho(_key, fg=PT_CONF_KEY, nl=False)
+                    click.secho('=', fg=PT_CONF_EQU, nl=False)
+                    click.secho(section[_key])
+                else:
+                    click.echo()
+            return
+
+        if section not in configs:
+            warning(f'找不到 {section} 。')
+            warning('注意：节名称是区分大小写的。', fg=PT_SPECIAL)
+            return
+
+        # 枚举一整节
+        if not key and not delete_it:
+            for k in configs[section]:
+                click.secho(k, nl=False, fg=PT_CONF_KEY)
+                click.secho(' = ', nl=False, fg=PT_CONF_EQU)
+                click.secho(configs[section][k])
+            return
+
+        # 删除一整节
+        if not key and delete_it:
+            if ask('确认删除一整节配置？(Y/[n]) '):
+                configs.remove_section(section)
+                configs.save()
+            return
+
+        if key not in configs[section]:
+            warning(f'在 {section} 里找不到 {key}。')
+            return
+
+        # 打印一个配置项
+        if not value and not delete_it:
+            click.secho(configs[section][key])
+            return
+
+        # 删除一个配置项
+        if not value and delete_it:
+            if ask('是否确认删除？(Y/[n]) '):
+                _ = configs[section].pop(key)
+                configs.save()
+            return
+
+        # 设置配置值
+        if section and key and value:
+            configs.ensure(section)[key] = value
+            configs.save()
