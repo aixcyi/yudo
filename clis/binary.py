@@ -234,8 +234,8 @@ def generate_chars(
     """
     随机生成 LENGTH 个字符。
 
-    如需查看所有字符集，请输入命令 yu conf charset；
-    如果需要添加或修改字符集的字符，请输入命令 yu conf charset.NAME "CHARACTERS"
+    如需查看所有字符集，请输入命令 yu conf yudo charset；
+    如果需要添加或修改字符集的字符，请输入命令 yu conf yudo charset.NAME="CHARACTERS"
 
     通常来说，如果要生成按比特数计的字符串，更建议用 randbit 命令。
 
