@@ -115,7 +115,7 @@ class Checksum(ParamType):
         self.fail(msg, param, ctx)
 
 
-@command('enumidc', deprecated=True, short_help='穷举所有可能的身份证号码【已废弃】')
+@command('enumidc', no_args_is_help=True, deprecated=True, short_help='穷举所有可能的身份证号码【已废弃】')
 @option('-p', '--province', multiple=True, help='省级代码，可输入多个。')
 @option('-c', '--city', multiple=True, help='市级代码，可输入多个。')
 @option('-t', '--county', multiple=True, help='县级代码，可输入多个。')

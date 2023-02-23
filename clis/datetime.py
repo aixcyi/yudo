@@ -97,7 +97,7 @@ class RawRange(click.ParamType):
         raise TypeError()
 
 
-@click.command('enumd', short_help='穷举范围内的日期')
+@click.command('enumd', no_args_is_help=True, short_help='穷举范围内的日期')
 @click.option('-f', '--format', 'fmt', default=DATE_FORMAT,
               help=f'输出格式，默认为“{DATE_FORMAT}”。日期作为参数时格式固定为“yyyy.mm.dd”。')
 @click.option('-i', '--interval', 'days',
@@ -154,7 +154,7 @@ def enum_date(
         print('\n'.join(dates))
 
 
-@click.command('enumdt', short_help='穷举范围内的日期时间')
+@click.command('enumdt', no_args_is_help=True, short_help='穷举范围内的日期时间')
 @click.option('-f', '--format', 'fmt', default=DATETIME_FORMAT,
               help=f'输出格式，默认为{DATETIME_FORMAT}。\n时间作为参数时格式固定为yyyy.mm.dd[+HH:MM:SS]。')
 @click.option('-i', '--interval', 'intervals',

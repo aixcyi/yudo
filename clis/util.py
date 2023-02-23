@@ -125,7 +125,7 @@ def get_length(encoding: str):
     print(f'比特数：{len(binary) * 8}')
 
 
-@click.command('exec', short_help='执行自定义的指令')
+@click.command('exec', no_args_is_help=True, short_help='执行自定义的指令')
 @click.argument('name', required=False)
 @click.argument('command', required=False)
 @click.help_option('-h', '--help', help='列出这份帮助信息。')

@@ -54,7 +54,7 @@ def search_code(a, b, _code, codes_map):
         return {}
 
 
-@click.command('adc', short_help='查询某个或列出指定条件下的行政区划代码')
+@click.command('adc', no_args_is_help=True, short_help='查询某个或列出指定条件下的行政区划代码')
 @click.option('-d', '--detail', 'detail', metavar='CODE', help='查询某个区划代码的详细信息。')
 @click.option('-s', '--sub', 'parent', metavar='CODE', help='查询某个区划的所有直接子级区划。')
 @click.option('-p', '--province', 'provinces', multiple=True, help='按省级代码(两位数字)筛选区划代码。可填多个。')
@@ -101,7 +101,7 @@ def get_adcode(
         else:
             codes = {}
         codes = codes.items()
-    else:
+    elif any([provinces, cities, counties, townships, towns, regex, title]):
         codes = ((c, n if n.__class__ is str else n['name']) for c, n in ad_codes.items())
         codes = ((c, n) for c, n in codes if c[0:2] in provinces) if provinces else codes
         codes = ((c, n) for c, n in codes if c[2:4] in cities) if cities else codes
@@ -110,6 +110,8 @@ def get_adcode(
         codes = ((c, n) for c, n in codes if c[9:12] in towns) if towns else codes
         codes = ((c, n) for c, n in codes if re.fullmatch(regex, c)) if regex else codes
         codes = ((c, n) for c, n in codes if n.find(title)) if title else codes
+    else:
+        codes = ()
     if purify:
         print('\n'.join(c for c, _ in codes))
         return

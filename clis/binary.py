@@ -183,7 +183,7 @@ class BitLength(click.ParamType):
         return [CompletionItem(a) for a in algorithms]
 
 
-@click.command('randbit', short_help='随机生成一定数量比特的字节串（bytes）')
+@click.command('randbit', no_args_is_help=True, short_help='随机生成一定数量比特的字节串（bytes）')
 @click.argument('bits', type=BitLength())
 @click.option('-q', '--qty', type=int, default=1, help='生成多少串字节串（每行一串）。')
 @click.option('-x', '--hex', 'hexadecimal', is_flag=True, help='以十六进制数组（HEX）格式输出。')
@@ -221,7 +221,8 @@ def generate_bits(
     print('\n'.join(ds))
 
 
-@click.command('randstr', short_help='随机生成一定长度的字符串', epilog='--- 更高强度的生成方式请自行定义 ---')
+@click.command('randstr', no_args_is_help=True, short_help='随机生成一定长度的字符串',
+               epilog='--- 更高强度的生成方式请自行定义 ---')
 @click.argument('length', type=int)
 @click.option('-c', '--charset', 'charsets', metavar='NAME', multiple=True,
               help='要添加的字符集的名称。可多选。使用 yu conf yudo charset 列出所有字符集；\n'
