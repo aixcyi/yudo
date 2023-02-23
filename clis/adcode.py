@@ -1,5 +1,6 @@
 import re
 from json import load as json_load
+from pathlib import Path
 
 import click
 
@@ -17,7 +18,8 @@ code_detail = """
 
 def lazy_load():
     # 数据来源：http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2022/index.html
-    with open(r'./code2022.json', 'r', encoding='UTF-8') as f:
+    path = Path(__file__).parent.parent / 'code2022.json'
+    with open(path, 'r', encoding='UTF-8') as f:
         return json_load(f)
 
 
