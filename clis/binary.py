@@ -221,9 +221,11 @@ def generate_bits(
     print('\n'.join(ds))
 
 
-@click.command('randstr', short_help='随机生成一定长度的字符串')
+@click.command('randstr', short_help='随机生成一定长度的字符串', epilog='--- 更高强度的生成方式请自行定义 ---')
 @click.argument('length', type=int)
-@click.option('-c', '--charset', 'charsets', metavar='CHARSET', multiple=True, help='要添加的字符集的名称。可多选。')
+@click.option('-c', '--charset', 'charsets', metavar='NAME', multiple=True,
+              help='要添加的字符集的名称。可多选。使用 yu conf yudo charset 列出所有字符集；\n'
+                   '使用 yu conf yudo charset.NAME="CHARACTERS" 修改字符集的字符。')
 @click.option('-m', '--line-max', type=int, default=0, help='每行最多放几个字符。')
 @click.help_option('-h', '--help', help='列出这份帮助信息。')
 def generate_chars(
@@ -234,12 +236,7 @@ def generate_chars(
     """
     随机生成 LENGTH 个字符。
 
-    如需查看所有字符集，请输入命令 yu conf yudo charset；
-    如果需要添加或修改字符集的字符，请输入命令 yu conf yudo charset.NAME="CHARACTERS"
-
     通常来说，如果要生成按比特数计的字符串，更建议用 randbit 命令。
-
-    对于更高强度的随机生成方式，或者需要实现定向随机，请自定义命令来实现。
     """
     with YudoConfigs() as configs:
         section = configs.ensure('charset')
