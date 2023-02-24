@@ -12,6 +12,8 @@
 TITLE yudo
 IF "%1"=="start" (
     %CONDA_PATH%conda activate %CONDA_ENV%
+) ELSE IF "%1"=="#install" (
+    %PYTHON_PATH%python -m pip install -r "%~dp0\requirements.txt"
 ) ELSE (
     CMD /C "%PYTHON_PATH%python %~dp0\main.py %*"
 )
