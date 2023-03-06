@@ -34,7 +34,7 @@ def parse_loc(location: str):
     usr_part, _, loc_part = location.rpartition('@')
     loc, _, port = loc_part.partition(':')
     usr, _, pwd = (usr_part if loc_part else '').partition(':')
-    return NetLocation(loc, port if port.isdigit() else 0, usr, pwd)
+    return NetLocation(loc, int(port) if port.isdigit() else 0, usr, pwd)
 
 
 def beautify_list(values):
